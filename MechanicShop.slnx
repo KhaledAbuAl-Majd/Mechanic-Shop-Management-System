@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="src/MechanicShop.Api/MechanicShop.Api.csproj" Id="e2466b72-f49a-457b-92f8-34b76fdb542e" />
+  <Project Path="src/MechanicShop.Application/MechanicShop.Application.csproj" Id="9df41dd5-cabb-4cba-b433-6fe5812d500d" />
+  <Project Path="src/MechanicShop.Domain/MechanicShop.Domain.csproj" Id="af328a41-c860-46f5-b20c-5e67c0c0161f" />
+  <Project Path="src/MechanicShop.Infrastructure/MechanicShop.Infrastructure.csproj" Id="c57faf14-ca1c-44e8-a8d0-c52ff2871803" />
+</Solution>
