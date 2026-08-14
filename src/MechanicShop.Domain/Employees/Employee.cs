@@ -1,6 +1,6 @@
 ﻿using MechanicShop.Domain.Common;
 using MechanicShop.Domain.Common.Results;
-using MechanicShop.Domain.Identity;
+using MechanicShop.Domain.Identity.Enums;
 
 namespace MechanicShop.Domain.Employees
 {
