@@ -4,7 +4,7 @@ namespace MechanicShop.Application.Common.Interfaces
 {
     public interface ICachedQuery
     {
-        string Key { get; }
+        string CacheKey { get; }
         string[] Tags { get; }
         TimeSpan Expiration { get; }
     }

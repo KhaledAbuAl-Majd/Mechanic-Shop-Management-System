@@ -21,7 +21,7 @@ namespace MechanicShop.Application.Common.Behaviours
 
             _logger.LogInformation("Checking cache for {RequestName}", typeof(TRequest).Name);
 
-            var result = await _cache.GetOrCreateAsync(key: cachedRequest.Key,
+            var result = await _cache.GetOrCreateAsync(key: cachedRequest.CacheKey,
                 factory: _ => new ValueTask<TResponse>((TResponse)(object)null!),
                 options: new HybridCacheEntryOptions
                 {
@@ -39,7 +39,7 @@ namespace MechanicShop.Application.Common.Behaviours
                 if (result is IResult res && res.IsSuccess)
                 {
                     _logger.LogInformation("Caching result for {RequstName}", typeof(TRequest).Name);
-                    await _cache.SetAsync(key: cachedRequest.Key,
+                    await _cache.SetAsync(key: cachedRequest.CacheKey,
                           value: result,
                           options: new HybridCacheEntryOptions
                           {
