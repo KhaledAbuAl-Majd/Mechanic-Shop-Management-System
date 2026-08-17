@@ -1,7 +1,6 @@
 ﻿using MechanicShop.Application.Common.Interfaces;
 using MechanicShop.Application.Features.Customers.Constants;
 using MechanicShop.Domain.Common.Results;
-using MediatR;
 
 namespace MechanicShop.Application.Features.Customers.Commands.UpdateCustomer
 {
@@ -12,7 +11,7 @@ namespace MechanicShop.Application.Features.Customers.Commands.UpdateCustomer
         string Email,
         List<UpdateVehicleCommand> Vehicles
 
-    ) : IRequest<Result<Updated>>, IInvalidateCacheCommand
+    ) : IInvalidateCacheCommand<Result<Updated>>
 
     {
         public string[] Tags => [CustomerCache.Tag];

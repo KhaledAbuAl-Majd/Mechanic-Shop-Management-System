@@ -24,5 +24,9 @@ namespace MechanicShop.Domain.Customers
 
         public static readonly Error InvalidPhoneNumber =
         Error.Conflict("Customer.InvalidPhoneNumber", "Phone number must be 7–15 digits and may start with '+'.");
+
+
+        public static readonly Error CannotDeleteCustomerWithWorkOrders =
+            Error.Conflict("Customer.CannotDelete", "Customer cannot be deleted due to existing work orders.");
     }
 }
