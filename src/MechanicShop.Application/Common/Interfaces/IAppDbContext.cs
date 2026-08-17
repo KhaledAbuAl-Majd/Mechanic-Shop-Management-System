@@ -20,6 +20,6 @@ namespace MechanicShop.Application.Common.Interfaces
         DbSet<Employee> Employees { get; }
         DbSet<Invoice> Invoices { get; }
         DbSet<RefreshToken> RefreshTokens { get; }
-        Task<int> SaveChangesAsyn(CancellationToken cancellationToken);
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

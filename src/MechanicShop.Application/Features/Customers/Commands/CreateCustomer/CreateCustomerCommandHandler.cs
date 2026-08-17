@@ -52,7 +52,7 @@ namespace MechanicShop.Application.Features.Customers.Commands.CreateCustomer
 
             _context.Customers.Add(createCustomerResult.Value);
 
-            await _context.SaveChangesAsyn(ct);
+            await _context.SaveChangesAsync(ct);
 
             //await _cache.RemoveByTagAsync("customer", ct);
 
