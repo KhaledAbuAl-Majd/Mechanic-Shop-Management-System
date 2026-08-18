@@ -20,6 +20,11 @@ namespace MechanicShop.Domain.RepairTasks
         public static Error PartsRequired =
        Error.Validation("RepairTask.Parts.Required", "At least one part is required.");
 
+        public static Error AtLeastOneRepairTaskIsRequired =>
+      Error.Validation(
+          code: "RepairTask.Required",
+          description: "At least one repair task must be specified.");
+
         public static Error InUse =>
             Error.Conflict("RepairTask.InUse", "Cannot delete a repair task that is used in work orders.");
 
