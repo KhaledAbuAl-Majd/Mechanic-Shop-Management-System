@@ -6,9 +6,6 @@ namespace MechanicShop.Application.Features.Customers.Commands.UpdateCustomer
     {
         public UpdateVehicleCommandValidator()
         {
-            RuleFor(x => x.VehicleId).NotEmpty()
-                .WithMessage("Vehicle Id is required.");
-
             RuleFor(x => x.Make)
                 .NotEmpty().MaximumLength(50);
 
