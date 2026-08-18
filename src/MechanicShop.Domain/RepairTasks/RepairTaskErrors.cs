@@ -19,5 +19,8 @@ namespace MechanicShop.Domain.RepairTasks
 
         public static Error PartsRequired =
        Error.Validation("RepairTask.Parts.Required", "At least one part is required.");
+
+        public readonly static Error DuplicateName =
+            Error.Conflict("RepairTaskPart.Duplicate", "A part with the same name already exists in this repair task.");
     }
 }
