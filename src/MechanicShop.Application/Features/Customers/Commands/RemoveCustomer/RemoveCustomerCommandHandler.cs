@@ -17,7 +17,7 @@ namespace MechanicShop.Application.Features.Customers.Commands.RemoveCustomer
         private readonly IAppDbContext _context = context;
         public async Task<Result<Deleted>> Handle(RemoveCustomerCommand command, CancellationToken ct)
         {
-            var customer = await _context.Customers.FindAsync(command.CustomerId, ct);
+            var customer = await _context.Customers.FindAsync([command.CustomerId], ct);
 
             if (customer is null)
             {

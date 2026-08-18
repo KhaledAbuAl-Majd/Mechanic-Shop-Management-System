@@ -2,8 +2,10 @@
 {
     public static class LaborCache
     {
-        public const string Tag = "labors";
+        private const string BaseName = "labors";
 
-        public const string AllKey = "labors:all";
+        public const string Tag = BaseName;
+
+        public const string AllKey = $"{BaseName}:all";
     }
 }

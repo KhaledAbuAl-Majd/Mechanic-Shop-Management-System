@@ -15,7 +15,7 @@ namespace MechanicShop.Application.Features.RepairTasks.Commands.RemoveRepairTas
         private readonly IAppDbContext _context = context;
         public async Task<Result<Deleted>> Handle(RemoveRepairTaskCommand command, CancellationToken ct)
         {
-            var repairTask = await _context.RepairTasks.FindAsync(command.RepairTaskId, ct);
+            var repairTask = await _context.RepairTasks.FindAsync([command.RepairTaskId], ct);
 
             if (repairTask is null)
             {

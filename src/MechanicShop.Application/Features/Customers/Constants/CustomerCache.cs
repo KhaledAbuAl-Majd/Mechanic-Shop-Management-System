@@ -2,9 +2,12 @@
 {
     public static class CustomerCache
     {
-        public const string Tag = "customers";
-        public const string AllKey = "customers:all";
+        private const string BaseName = "customers";
+
+        public const string Tag = BaseName;
+
+        public const string AllKey = $"{BaseName}:all";
         public static string ByIdKey(Guid id) => ByIdKey(id.ToString());
-        public static string ByIdKey(string id) => $"customers:{id}";
+        public static string ByIdKey(string id) => $"{BaseName}:{id}";
     }
 }
