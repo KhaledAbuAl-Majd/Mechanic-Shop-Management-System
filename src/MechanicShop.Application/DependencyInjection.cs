@@ -1,6 +1,9 @@
 ﻿using System.Reflection;
 using FluentValidation;
 using MechanicShop.Application.Common.Behaviours;
+using MechanicShop.Application.Features.WorkOrders.Interfaces;
+using MechanicShop.Application.Features.WorkOrders.Services;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -20,6 +23,8 @@ public static class DependencyInjection
 
             cfg.AddRequestPostProcessor(typeof(CacheInvalidationBehaviour<,>));
         });
+
+        services.TryAddScoped<IWorkOrderPolicy, WorkOrderPolicy>();
 
         return services;
     }
