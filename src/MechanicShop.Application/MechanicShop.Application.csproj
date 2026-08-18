@@ -15,8 +15,4 @@
     <ProjectReference Include="..\MechanicShop.Domain\MechanicShop.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\RepairTasks\Queries\" />
-  </ItemGroup>
-
 </Project>
