@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\WorkOrders\Commands\" />
     <Folder Include="Features\WorkOrders\EventHandlers\" />
     <Folder Include="Features\WorkOrders\Queries\" />
   </ItemGroup>
