@@ -45,7 +45,7 @@ namespace MechanicShop.Application.Features.WorkOrders.Commands.UpdateWorkOrderS
 
             if (workOrder.State == WorkOrderState.Completed)
             {
-                workOrder.AddDomainEvent(new WorkOrderCompleted());
+                workOrder.AddDomainEvent(new WorkOrderCompleted() { WorkOrderId = workOrder.Id });
             }
 
             workOrder.AddDomainEvent(new WorkOrderCollectionModified());
