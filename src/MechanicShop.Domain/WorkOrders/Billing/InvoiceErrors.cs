@@ -5,8 +5,8 @@ namespace MechanicShop.Domain.WorkOrders.Billing
     public static class InvoiceErrors
     {
         public static readonly Error IdRequired = Error.Validation(
-           code: "Invoice.Id.Invalid",
-           description: "ID is required.");
+           code: "Invoice.Id.Required",
+           description: "InvoiceId is required.");
 
         public static readonly Error WorkOrderIdInvalid = Error.Validation(
            code: "Invoice.WorkOrderId.Invalid",
