@@ -11,6 +11,6 @@ namespace MechanicShop.Application.Features.Billing.Queries.GetInvoiceById
 
         public string[] Tags => [InvoiceCache.Tag];
 
-        public TimeSpan Expiration => TimeSpan.FromMinutes(10);
+        public TimeSpan Expiration => TimeSpan.FromMinutes(30);
     }
 }
