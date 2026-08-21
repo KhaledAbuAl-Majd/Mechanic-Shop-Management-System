@@ -29,8 +29,20 @@ namespace MechanicShop.Application.Common.Errors
                     "ApplicationErrors.RepairTask.NotFound",
                     "Repair task does not exist.");
 
+        public static Error WorkOrderMustBeCompletedForInvoicing =>
+            Error.Conflict(
+                    "WorkOrder.InvoiceIssuance.InvalidState",
+                    "WorkOrder must be in 'Completed' state to issue an invoice.");
+
+        public static Error InvoiceNotFound => Error.NotFound(
+           "ApplicationErrors.Invoice.NotFound",
+           "Invoice does not exist.");
+
         public static Error LaborNotFound =>
             Error.NotFound("Employee.LaborNotFound", "Labor does not exist.");
+
+        public static Error InvoiceAlreadyIssued =>
+            Error.Conflict("Invoice.AlreadyIssued", "An invoice has already been issued for this work order.");
 
     }
 }
