@@ -15,4 +15,9 @@
     <ProjectReference Include="..\MechanicShop.Domain\MechanicShop.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Billing\Commands\" />
+    <Folder Include="Features\Billing\Queries\" />
+  </ItemGroup>
+
 </Project>
