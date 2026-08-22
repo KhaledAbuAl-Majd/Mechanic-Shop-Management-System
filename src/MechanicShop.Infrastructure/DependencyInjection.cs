@@ -34,6 +34,7 @@ public static class DependencyInjection
         QuestPDF.Settings.License = LicenseType.Community;
 
         services.TryAddSingleton<IInvoicePdfGenerator, InvoicePdfGenerator>();
+        services.TryAddSingleton<INotificationService, NotificationService>();
 
         return services;
     }
