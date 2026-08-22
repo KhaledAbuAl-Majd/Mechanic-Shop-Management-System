@@ -60,6 +60,7 @@ namespace MechanicShop.Application.Features.Identity.Commands.RefreshToken
                 ct);
 
             if (oldRefreshToken is null || !oldRefreshToken.IsActive(_datetime))
+
             {
                 _logger.LogWarning("Refresh token is invalid or expired for user {UserId}", userId);
 
