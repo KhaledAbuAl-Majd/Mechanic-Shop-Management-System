@@ -15,5 +15,8 @@ namespace MechanicShop.Domain.Identity
 
         public static Error ExpiryInvalid =>
             Error.Validation("RefreshToken.Expiry.Invalid", "Expiry must be in the future.");
+
+        public static Error RefreshTokenAlreadyRevoked =>
+            Error.Conflict("RefreshToken.Already.Revoked", "Refresh Token is already revoked.");
     }
 }
