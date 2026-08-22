@@ -5,6 +5,7 @@ using MechanicShop.Application.Common.Settings;
 using MechanicShop.Application.Features.Billing.Interfaces;
 using MechanicShop.Application.Features.Identity.Interfaces;
 using MechanicShop.Domain.Identity.Enums;
+using MechanicShop.Infrastructure.BackgroundJobs;
 using MechanicShop.Infrastructure.Identity;
 using MechanicShop.Infrastructure.Identity.Polices;
 using MechanicShop.Infrastructure.Services;
@@ -29,12 +30,28 @@ public static class DependencyInjection
 
         services.TryAddSingleton(jwtSettings);
 
-        services.AddIdentity(jwtSettings);
 
         QuestPDF.Settings.License = LicenseType.Community;
 
-        services.TryAddSingleton<IInvoicePdfGenerator, InvoicePdfGenerator>();
-        services.TryAddSingleton<INotificationService, NotificationService>();
+        services.AddBackgroundServices();
+        services.AddData();
+        services.AddIdentity(jwtSettings);
+        services.AddServices();
+
+
+        return services;
+    }
+
+    private static IServiceCollection AddData(this IServiceCollection services)
+    {
+
+
+        return services;
+    }
+
+    private static IServiceCollection AddBackgroundServices(this IServiceCollection services)
+    {
+        services.AddHostedService<OverdueBookingCleanupService>();
 
         return services;
     }
@@ -70,6 +87,15 @@ public static class DependencyInjection
 
         services.TryAddScoped<IIdentityService, IdentityService>();
         services.TryAddScoped<ITokenProvider, TokenProvider>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddServices(this IServiceCollection services)
+    {
+
+        services.TryAddSingleton<IInvoicePdfGenerator, InvoicePdfGenerator>();
+        services.TryAddSingleton<INotificationService, NotificationService>();
 
         return services;
     }
