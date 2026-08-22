@@ -2,15 +2,18 @@
 using MechanicShop.Application.Common.Constants;
 using MechanicShop.Application.Common.Interfaces;
 using MechanicShop.Application.Common.Settings;
+using MechanicShop.Application.Features.Billing.Interfaces;
 using MechanicShop.Application.Features.Identity.Interfaces;
 using MechanicShop.Domain.Identity.Enums;
 using MechanicShop.Infrastructure.Identity;
 using MechanicShop.Infrastructure.Identity.Polices;
+using MechanicShop.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
+using QuestPDF.Infrastructure;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -26,8 +29,12 @@ public static class DependencyInjection
 
         services.TryAddSingleton(jwtSettings);
 
-
         services.AddIdentity(jwtSettings);
+
+        QuestPDF.Settings.License = LicenseType.Community;
+
+        services.TryAddSingleton<IInvoicePdfGenerator, InvoicePdfGenerator>();
+
         return services;
     }
 
