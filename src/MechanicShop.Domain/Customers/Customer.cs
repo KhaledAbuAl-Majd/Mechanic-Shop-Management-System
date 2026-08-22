@@ -88,7 +88,7 @@ namespace MechanicShop.Domain.Customers
             return Result.Updated;
         }
 
-        public Result<Updated> UpsertParts(List<Vehicle> incomingVehicle)
+        public Result<Updated> UpsertVehicles(List<Vehicle> incomingVehicle)
         {
             //delete un existed cars 
             _vehicles.RemoveAll(existing => incomingVehicle.All(v => v.Id != existing.Id));

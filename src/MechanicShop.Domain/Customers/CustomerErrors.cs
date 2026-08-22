@@ -19,7 +19,14 @@ namespace MechanicShop.Domain.Customers
         public static Error EmailInvalid =>
             Error.Validation("Customer.Email.Invalid", "Email is invalid");
 
+        public static Error CustomerExists =>
+       Error.Conflict("Customer.Email.Exists", "A customer with this email already exists.");
+
         public static readonly Error InvalidPhoneNumber =
         Error.Conflict("Customer.InvalidPhoneNumber", "Phone number must be 7–15 digits and may start with '+'.");
+
+
+        public static readonly Error CannotDeleteCustomerWithWorkOrders =
+            Error.Conflict("Customer.CannotDelete", "Customer cannot be deleted due to existing work orders.");
     }
 }
