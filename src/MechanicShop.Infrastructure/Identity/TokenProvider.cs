@@ -2,19 +2,16 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using MechanicShop.Application.Common.Interfaces;
 using MechanicShop.Application.Common.Settings;
 using MechanicShop.Application.Features.Identity.Dtos;
 using MechanicShop.Application.Features.Identity.Interfaces;
 using MechanicShop.Domain.Common.Results;
-using MechanicShop.Domain.Identity;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MechanicShop.Infrastructure.Identity
 {
-    public class TokenProvider(IAppDbContext context, JwtSettings jwtSettings, TimeProvider datetime) : ITokenProvider
+    public class TokenProvider(JwtSettings jwtSettings, TimeProvider datetime) : ITokenProvider
     {
-        private readonly IAppDbContext _context = context;
         private readonly JwtSettings _jwtSettings = jwtSettings;
         private readonly TimeProvider _datetime = datetime;
 
@@ -81,28 +78,15 @@ namespace MechanicShop.Infrastructure.Identity
 
             var securityToken = tokenHandler.CreateToken(descriptor);
 
-            var refreshTokenResult = RefreshToken.Create(
-                Guid.NewGuid(),
-                GenerateRefreshToken(),
-                user.UserId,
-                _datetime.GetUtcNow().AddDays(_jwtSettings.RefreshTokenExpirationInDays),
-                _datetime);
+            var generatedRefreshToken = GenerateRefreshToken();
 
-            if (refreshTokenResult.IsError)
-                return refreshTokenResult.Errors;
 
-            var refreshToken = refreshTokenResult.Value;
-
-            _context.RefreshTokens.Add(refreshToken);
-
-            await _context.SaveChangesAsync(ct);
-
-            return new TokenDto(tokenHandler.WriteToken(securityToken), refreshToken.Token, expires.DateTime);
+            return new TokenDto(tokenHandler.WriteToken(securityToken), generatedRefreshToken, expires.DateTime);
         }
 
         private static string GenerateRefreshToken()
         {
-            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
         }
     }
 }
