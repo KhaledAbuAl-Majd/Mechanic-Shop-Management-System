@@ -5,30 +5,32 @@ namespace MechanicShop.Domain.Identity
 {
     public sealed class RefreshToken : AuditableEntity
     {
-        public string Token { get; } = null!;
-        public string UserId { get; } = null!;
-        public DateTimeOffset ExpiresOnUtc { get; }
+        public string TokenHash { get; private set; } = null!;
+        public string UserId { get; private set; } = null!;
+        public DateTimeOffset ExpiresOnUtc { get; private set; }
         public bool IsRevoked { get; private set; }
+        public DateTimeOffset? RevokedAt { get; private set; } = null;
 
         public bool IsActive(TimeProvider datetime) =>
              !IsRevoked && ExpiresOnUtc >= datetime.GetUtcNow();
 
         private RefreshToken() { }
 
-        private RefreshToken(Guid id, string token, string userId, DateTimeOffset expiresOnUtc, bool isRevoked) : base(id)
+        private RefreshToken(Guid id, string token, string userId, DateTimeOffset expiresOnUtc, bool isRevoked, DateTimeOffset? revokedAt) : base(id)
         {
-            Token = token;
+            TokenHash = token;
             UserId = userId;
             ExpiresOnUtc = expiresOnUtc;
             IsRevoked = isRevoked;
+            RevokedAt = revokedAt;
         }
 
-        public static Result<RefreshToken> Create(Guid id, string token, string userId, DateTimeOffset expiresOnUtc, TimeProvider datetime)
+        public static Result<RefreshToken> Create(Guid id, string tokenHash, string userId, DateTimeOffset expiresOnUtc, TimeProvider datetime)
         {
             if (id == Guid.Empty)
                 return RefreshTokenErrors.IdRequired;
 
-            if (string.IsNullOrWhiteSpace(token))
+            if (string.IsNullOrWhiteSpace(tokenHash))
                 return RefreshTokenErrors.TokenRequired;
 
             if (string.IsNullOrWhiteSpace(userId))
@@ -37,15 +39,16 @@ namespace MechanicShop.Domain.Identity
             if (expiresOnUtc <= datetime.GetUtcNow())
                 return RefreshTokenErrors.ExpiryInvalid;
 
-            return new RefreshToken(id, token, userId, expiresOnUtc, false);
+            return new RefreshToken(id, tokenHash, userId, expiresOnUtc, false, null);
         }
 
-        public Result<Updated> Revoke()
+        public Result<Updated> Revoke(TimeProvider datetime)
         {
             if (IsRevoked)
                 return RefreshTokenErrors.RefreshTokenAlreadyRevoked;
 
             IsRevoked = true;
+            RevokedAt = datetime.GetUtcNow();
 
             return Result.Updated;
         }

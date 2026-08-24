@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using MechanicShop.Application.Common.Errors;
 using MechanicShop.Application.Common.Interfaces;
+using MechanicShop.Application.Common.Utilities;
 using MechanicShop.Application.Features.Identity.Dtos;
 using MechanicShop.Application.Features.Identity.Interfaces;
 using MechanicShop.Domain.Common.Results;
@@ -51,12 +52,14 @@ namespace MechanicShop.Application.Features.Identity.Commands.RefreshToken
                 return getUserResult.Errors;
             }
 
-            var refreshToken = await _context.RefreshTokens
+            var hashedRefreshToken = HashHelper.ComputeSha256(command.RefreshToken);
+
+            var oldRefreshToken = await _context.RefreshTokens
                 .FirstOrDefaultAsync(
-                rt => rt.Token == command.RefreshToken && rt.UserId == userId,
+                rt => rt.TokenHash == hashedRefreshToken && rt.UserId == userId,
                 ct);
 
-            if (refreshToken is null || !refreshToken.IsActive(datetime))
+            if (oldRefreshToken is null || !oldRefreshToken.IsActive(_datetime))
             {
                 _logger.LogWarning("Refresh token is invalid or expired for user {UserId}", userId);
 
@@ -72,18 +75,39 @@ namespace MechanicShop.Application.Features.Identity.Commands.RefreshToken
                 return generateTokenResult.Errors;
             }
 
-            var revokeTokenResult = refreshToken.Revoke();
+            var generatedTokenDto = generateTokenResult.Value;
+
+            var revokeTokenResult = oldRefreshToken.Revoke(_datetime);
 
             if (revokeTokenResult.IsError)
             {
-                _logger.LogWarning("Revoke token with Id {@tokenId}, error occured: {@Errors}", refreshToken.Id, revokeTokenResult.Errors);
+                _logger.LogWarning("Revoke token with Id {@tokenId}, error occured: {@Errors}", oldRefreshToken.Id, revokeTokenResult.Errors);
 
                 return revokeTokenResult.Errors;
             }
 
+            var createRefreshTokenResult = Domain.Identity.RefreshToken.Create(
+                Guid.NewGuid(),
+                HashHelper.ComputeSha256(generatedTokenDto.RefreshToken),
+                userId,
+                generatedTokenDto.ExpiresOnUtc,
+                _datetime);
+
+            if (createRefreshTokenResult.IsError)
+            {
+                _logger.LogWarning("Create refresh token failed, error occured: {@Errors}", createRefreshTokenResult.Errors);
+                return createRefreshTokenResult.Errors;
+            }
+
+            var newRefreshToken = createRefreshTokenResult.Value;
+
+            _context.RefreshTokens.Add(newRefreshToken);
+
             await _context.SaveChangesAsync(ct);
 
-            return generateTokenResult.Value;
+            _logger.LogInformation("Refresh Token Successfully for user Id {id}", userId);
+
+            return generatedTokenDto;
         }
     }
 }
