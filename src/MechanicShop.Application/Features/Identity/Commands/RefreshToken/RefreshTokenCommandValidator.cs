@@ -8,11 +8,11 @@ namespace MechanicShop.Application.Features.Identity.Commands.RefreshToken
         {
             RuleFor(x => x.RefreshToken).NotEmpty()
                 .WithErrorCode("RefreshToken.Required")
-                .WithMessage("Refresh Token is required.");
+                .WithMessage("Refresh TokenHash is required.");
 
             RuleFor(x => x.ExpiredAccessToken).NotEmpty()
                 .WithErrorCode("ExpiredAccessToken.Required")
-                .WithMessage("Expired Access Token is required.");
+                .WithMessage("Expired Access TokenHash is required.");
         }
     }
 }
