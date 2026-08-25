@@ -1,5 +1,8 @@
 ﻿using MechanicShop.Api.Infrastructure;
+using MechanicShop.Api.Services;
+using MechanicShop.Application.Common.Interfaces;
 using MechanicShop.Application.Common.Settings;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -13,7 +16,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton(sp => sp.GetRequiredService<IOptions<AppSettings>>().Value);
 
             services.AddCustomProblemDetails()
-                    .AddExceptionHandling();
+                    .AddExceptionHandling()
+                    .AddCurrentUserService();
 
             return services;
         }
@@ -37,6 +41,13 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
+        public static IServiceCollection AddCurrentUserService(this IServiceCollection services)
+        {
+            services.AddHttpContextAccessor();
+            services.TryAddScoped<IUser, CurrentUser>();
+
+            return services;
+        }
         public static IApplicationBuilder UseCoreMiddlewares(this IApplicationBuilder app, IConfiguration configuration)
         {
             app.UseExceptionHandler();
