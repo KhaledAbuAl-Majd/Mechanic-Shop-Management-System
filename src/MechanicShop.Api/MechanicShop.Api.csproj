@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Asp.Versioning.Mvc" Version="10.2.1" />
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="10.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MechanicShop.Application\MechanicShop.Application.csproj" />
     <ProjectReference Include="..\MechanicShop.Infrastructure\MechanicShop.Infrastructure.csproj" />
   </ItemGroup>

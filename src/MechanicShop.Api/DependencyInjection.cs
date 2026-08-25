@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Asp.Versioning;
 using MechanicShop.Api.Infrastructure;
 using MechanicShop.Api.Services;
 using MechanicShop.Application.Common.Interfaces;
@@ -17,6 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton(sp => sp.GetRequiredService<IOptions<AppSettings>>().Value);
 
             services.AddCustomProblemDetails()
+                    .AddCustomApiVersioning()
                     .AddExceptionHandling()
                     .AddControllerWithJsonConfiguration()
                     .AddCurrentUserService();
@@ -32,6 +34,24 @@ namespace Microsoft.Extensions.DependencyInjection
                     context.ProblemDetails.Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path}";
                     context.ProblemDetails.Extensions.Add("requestId", context.HttpContext.TraceIdentifier);
                 };
+            });
+
+            return services;
+        }
+        public static IServiceCollection AddCustomApiVersioning(this IServiceCollection services)
+        {
+            services.AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(1);
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ReportApiVersions = true;
+                options.ApiVersionReader = new UrlSegmentApiVersionReader();
+            })
+            .AddMvc()
+            .AddApiExplorer(options=>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
             });
 
             return services;
