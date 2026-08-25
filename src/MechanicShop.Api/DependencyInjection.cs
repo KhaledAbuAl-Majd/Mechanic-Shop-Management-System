@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Asp.Versioning;
 using MechanicShop.Api.Infrastructure;
+using MechanicShop.Api.OpenApi.Transformers;
 using MechanicShop.Api.Services;
 using MechanicShop.Application.Common.Interfaces;
 using MechanicShop.Application.Common.Settings;
@@ -19,12 +20,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddCustomProblemDetails()
                     .AddCustomApiVersioning()
+                    .AddApiDocumentation()
                     .AddExceptionHandling()
                     .AddControllerWithJsonConfiguration()
                     .AddCurrentUserService();
 
             return services;
         }
+
         public static IServiceCollection AddCustomProblemDetails(this IServiceCollection services)
         {
             services.AddProblemDetails(options =>
@@ -38,6 +41,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services;
         }
+
         public static IServiceCollection AddCustomApiVersioning(this IServiceCollection services)
         {
             services.AddApiVersioning(options =>
@@ -56,12 +60,33 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services;
         }
+
+        public static IServiceCollection AddApiDocumentation(this IServiceCollection services)
+        {
+            string[] versions = ["v1"];
+
+            foreach(var version in versions)
+            {
+                services.AddOpenApi(version, options =>
+                {
+                    options.AddDocumentTransformer<VersionInfoTransformer>();
+
+                    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+
+                    options.AddOperationTransformer<BearerSecurityOperationTransformer>();
+                });
+            }
+
+            return services;
+        }
+
         public static IServiceCollection AddExceptionHandling(this IServiceCollection services)
         {
             services.AddExceptionHandler<GlobalExceptionHandler>();
 
             return services;
         }
+
         public static IServiceCollection AddControllerWithJsonConfiguration(this IServiceCollection services)
         {
             services.AddControllers().AddJsonOptions(options =>
@@ -73,6 +98,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services;
         }
+
         public static IServiceCollection AddCurrentUserService(this IServiceCollection services)
         {
             services.AddHttpContextAccessor();
@@ -80,6 +106,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services;
         }
+
         public static IApplicationBuilder UseCoreMiddlewares(this IApplicationBuilder app, IConfiguration configuration)
         {
             app.UseExceptionHandler();
