@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using MechanicShop.Application.Common;
 using MechanicShop.Application.Common.Constants;
 using MechanicShop.Application.Common.Interfaces;
 using MechanicShop.Application.Common.Settings;
@@ -129,6 +130,7 @@ public static class DependencyInjection
 
         services.TryAddSingleton<IInvoicePdfGenerator, InvoicePdfGenerator>();
         services.TryAddSingleton<INotificationService, NotificationService>();
+        services.TryAddSingleton<IWorkOrderNotifier, WorkOrderNotifier>();
 
         return services;
     }

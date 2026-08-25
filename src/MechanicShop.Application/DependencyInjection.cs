@@ -20,8 +20,9 @@ public static class DependencyInjection
             cfg.AddOpenBehavior(typeof(ValidationBehaviour<,>));
             cfg.AddOpenBehavior(typeof(PerformanceBehaviour<,>));
             cfg.AddOpenBehavior(typeof(CachingBehviour<,>));
+            cfg.AddOpenBehavior(typeof(CacheInvalidationBehaviour<,>));
 
-            cfg.AddRequestPostProcessor(typeof(CacheInvalidationBehaviour<,>));
+            //cfg.AddRequestPostProcessor(typeof(CacheInvalidationBehaviour<,>));
         });
 
         services.TryAddScoped<IWorkOrderPolicy, WorkOrderPolicy>();
