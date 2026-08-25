@@ -6,11 +6,16 @@ using MechanicShop.Application.Features.Billing.Interfaces;
 using MechanicShop.Application.Features.Identity.Interfaces;
 using MechanicShop.Domain.Identity.Enums;
 using MechanicShop.Infrastructure.BackgroundJobs;
+using MechanicShop.Infrastructure.Data;
+using MechanicShop.Infrastructure.Data.Interceptors;
 using MechanicShop.Infrastructure.Identity;
 using MechanicShop.Infrastructure.Identity.Polices;
 using MechanicShop.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
@@ -20,11 +25,15 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuraion)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddSingleton(TimeProvider.System);
 
-        var jwtSettings = configuraion.GetSection(JwtSettings.SectionName).Get<JwtSettings>();
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+        ArgumentNullException.ThrowIfNull(connectionString);
+
+        var jwtSettings = configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>();
 
         ArgumentNullException.ThrowIfNull(jwtSettings);
 
@@ -34,7 +43,7 @@ public static class DependencyInjection
         QuestPDF.Settings.License = LicenseType.Community;
 
         services.AddBackgroundServices();
-        services.AddData();
+        services.AddData(connectionString);
         services.AddIdentity(jwtSettings);
         services.AddServices();
 
@@ -42,9 +51,32 @@ public static class DependencyInjection
         return services;
     }
 
-    private static IServiceCollection AddData(this IServiceCollection services)
+    private static IServiceCollection AddData(this IServiceCollection services,string connectionString)
     {
+        services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
 
+        services.AddDbContext<AppDbContext>((sp,options) =>
+        {
+            options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
+            options.UseSqlServer(connectionString);
+        });
+
+        services.AddScoped<ApplicationDbContextInitialiser>();
+
+        services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
+
+        services.AddIdentityCore<AppUser>(options =>
+        {
+            options.Password.RequiredLength = 6;
+            options.Password.RequireDigit = false;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireLowercase = false;
+            options.Password.RequiredUniqueChars = 1;
+            options.SignIn.RequireConfirmedAccount = false;
+        })
+            .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<AppDbContext>();
 
         return services;
     }
