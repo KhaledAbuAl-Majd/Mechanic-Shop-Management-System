@@ -1,4 +1,5 @@
-﻿using MechanicShop.Api.Infrastructure;
+﻿using System.Text.Json.Serialization;
+using MechanicShop.Api.Infrastructure;
 using MechanicShop.Api.Services;
 using MechanicShop.Application.Common.Interfaces;
 using MechanicShop.Application.Common.Settings;
@@ -17,6 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddCustomProblemDetails()
                     .AddExceptionHandling()
+                    .AddControllerWithJsonConfiguration()
                     .AddCurrentUserService();
 
             return services;
@@ -40,7 +42,17 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services;
         }
+        public static IServiceCollection AddControllerWithJsonConfiguration(this IServiceCollection services)
+        {
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
 
+
+            return services;
+        }
         public static IServiceCollection AddCurrentUserService(this IServiceCollection services)
         {
             services.AddHttpContextAccessor();
