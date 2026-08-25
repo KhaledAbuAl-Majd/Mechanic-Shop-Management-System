@@ -1,4 +1,5 @@
-﻿using MechanicShop.Application.Common.Settings;
+﻿using MechanicShop.Api.Infrastructure;
+using MechanicShop.Application.Common.Settings;
 using Microsoft.Extensions.Options;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -10,6 +11,28 @@ namespace Microsoft.Extensions.DependencyInjection
             services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
 
             services.AddSingleton(sp => sp.GetRequiredService<IOptions<AppSettings>>().Value);
+
+            services.AddCustomProblemDetails()
+                    .AddExceptionHandling();
+
+            return services;
+        }
+        public static IServiceCollection AddCustomProblemDetails(this IServiceCollection services)
+        {
+            services.AddProblemDetails(options =>
+            {
+                options.CustomizeProblemDetails = context =>
+                {
+                    context.ProblemDetails.Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path}";
+                    context.ProblemDetails.Extensions.Add("requestId", context.HttpContext.TraceIdentifier);
+                };
+            });
+
+            return services;
+        }
+        public static IServiceCollection AddExceptionHandling(this IServiceCollection services)
+        {
+            services.AddExceptionHandler<GlobalExceptionHandler>();
 
             return services;
         }
