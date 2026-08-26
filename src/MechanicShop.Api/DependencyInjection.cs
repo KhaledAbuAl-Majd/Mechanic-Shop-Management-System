@@ -23,7 +23,25 @@ namespace Microsoft.Extensions.DependencyInjection
                     .AddApiDocumentation()
                     .AddExceptionHandling()
                     .AddControllerWithJsonConfiguration()
-                    .AddCurrentUserService();
+                    .AddCurrentUserService()
+                    .AddAppOutputCaching();
+
+            return services;
+        }
+
+        private static IServiceCollection AddAppOutputCaching(this IServiceCollection services)
+        {
+            services.AddOutputCache(options =>
+            {
+                options.SizeLimit = 100 * 1024 * 1024;//100 mb
+
+                options.AddBasePolicy(policy =>
+                {
+                    policy.Expire(TimeSpan.FromSeconds(60));
+                });
+
+                options.UseCaseSensitivePaths = false;
+            });
 
             return services;
         }
@@ -120,6 +138,8 @@ namespace Microsoft.Extensions.DependencyInjection
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            app.UseOutputCache();
 
             return app;
         }
