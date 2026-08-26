@@ -11,6 +11,8 @@ namespace MechanicShop.Infrastructure.Data.Configurations
         {
             builder.ToTable("WorkOrders");
 
+            builder.Property(v => v.Id).ValueGeneratedNever();
+
             builder.HasKey(wo => wo.Id).IsClustered(false);
 
             builder.Property(wo => wo.LaborId).IsRequired();

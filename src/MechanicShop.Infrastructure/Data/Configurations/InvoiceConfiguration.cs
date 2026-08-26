@@ -10,6 +10,8 @@ namespace MechanicShop.Infrastructure.Data.Configurations
         {
             builder.ToTable("Invoices");
 
+            builder.Property(v => v.Id).ValueGeneratedNever();
+
             builder.HasKey(i => i.Id).IsClustered(false);
 
             builder.Property(i => i.IssuedAtUtc).IsRequired();
