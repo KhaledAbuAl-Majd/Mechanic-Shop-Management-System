@@ -20,20 +20,16 @@ namespace MechanicShop.Infrastructure.Identity
         {
             var user = await _userManager.FindByEmailAsync(email);
 
-            if (user is null)
+            if (user is null || !await _userManager.CheckPasswordAsync(user,password))
             {
-                return Error.NotFound("User.NotFound", $"User with email {email.MaskEmail()} not found.");
+                return Error.Unauthorized("Authentication.Failed", "Invalid email or password.");
             }
 
             if (!user.EmailConfirmed)
             {
-                return Error.Conflict("Email.NotConfirmed", $"email '{email.MaskEmail()}' not confirmed.");
+                return Error.Forbidden("Email.NotConfirmed", $"Email '{email.MaskEmail()}' is not confirmed.");
             }
 
-            if (!await _userManager.CheckPasswordAsync(user, password))
-            {
-                return Error.Conflict("Invalid.Login.Attempt", "Email / Password are incorrect");
-            }
 
             var roles = await _userManager.GetRolesAsync(user);
             var claims = await _userManager.GetClaimsAsync(user);

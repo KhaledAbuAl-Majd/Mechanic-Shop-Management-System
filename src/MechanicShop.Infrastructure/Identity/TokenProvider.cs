@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using MechanicShop.Application.Common.Errors;
 using MechanicShop.Application.Common.Settings;
 using MechanicShop.Application.Features.Identity.Dtos;
 using MechanicShop.Application.Features.Identity.Interfaces;
@@ -20,8 +21,22 @@ namespace MechanicShop.Infrastructure.Identity
             return await CreateAsync(user, ct);
         }
 
-        public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
+        public Result<ClaimsPrincipal> GetPrincipalFromExpiredToken(string token)
         {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return ApplicationErrors.ExpiredAccessTokenInvalid;
+            }
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            if (!tokenHandler.CanReadToken(token))
+            {
+                return ApplicationErrors.ExpiredAccessTokenInvalid;
+
+                //return Error.Validation("AccessToken.invalid", "Access token is invalid");
+            }
+
             //validate token manual (same as authentication middleware)
 
             var tokenValidatorParamters = new TokenValidationParameters
@@ -36,13 +51,20 @@ namespace MechanicShop.Infrastructure.Identity
                 ClockSkew = TimeSpan.Zero
             };
 
-            var tokenHandler = new JwtSecurityTokenHandler();
+
+
             var principal = tokenHandler.ValidateToken(token, tokenValidatorParamters, out SecurityToken securityToken);
 
             if (securityToken is not JwtSecurityToken jwtSecurityToken ||
                 !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
             {
-                throw new SecurityTokenException("Invalid token.");
+                return ApplicationErrors.ExpiredAccessTokenInvalid;
+                //return Error.Validation("AccessToken.invalid", "Access token is invalid");
+            }
+
+            if(jwtSecurityToken.ValidTo > _datetime.GetUtcNow())
+            {
+                return Error.Validation("AccessToken.NotExpired", "Access token not expired yet.");
             }
 
             return principal;
@@ -66,7 +88,7 @@ namespace MechanicShop.Infrastructure.Identity
             var descriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = expires.DateTime,
+                Expires = expires.UtcDateTime,
                 Issuer = _jwtSettings.Issuer,
                 Audience = _jwtSettings.Audience,
                 SigningCredentials = new SigningCredentials(
@@ -81,7 +103,7 @@ namespace MechanicShop.Infrastructure.Identity
             var generatedRefreshToken = GenerateRefreshToken();
 
 
-            return new TokenDto(tokenHandler.WriteToken(securityToken), generatedRefreshToken, expires.DateTime);
+            return new TokenDto(tokenHandler.WriteToken(securityToken), generatedRefreshToken, expires);
         }
 
         private static string GenerateRefreshToken()

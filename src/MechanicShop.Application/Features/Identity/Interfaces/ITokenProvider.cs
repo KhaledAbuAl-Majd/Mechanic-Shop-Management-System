@@ -7,6 +7,6 @@ namespace MechanicShop.Application.Features.Identity.Interfaces
     public interface ITokenProvider
     {
         Task<Result<TokenDto>> GenerateJwtTokenAsync(AppUserDto user, CancellationToken ct = default);
-        ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
+        Result<ClaimsPrincipal> GetPrincipalFromExpiredToken(string token);
     }
 }

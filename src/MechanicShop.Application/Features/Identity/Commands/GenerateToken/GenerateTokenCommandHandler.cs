@@ -1,4 +1,5 @@
 ﻿using MechanicShop.Application.Common.Interfaces;
+using MechanicShop.Application.Common.Settings;
 using MechanicShop.Application.Common.Utilities;
 using MechanicShop.Application.Features.Identity.Dtos;
 using MechanicShop.Application.Features.Identity.Interfaces;
@@ -13,16 +14,20 @@ namespace MechanicShop.Application.Features.Identity.Commands.GenerateToken
         IIdentityService identityService,
         ITokenProvider tokenProvider,
         IAppDbContext context,
-        TimeProvider datetime) : IRequestHandler<GenerateTokenCommand, Result<TokenDto>>
+        TimeProvider datetime,
+        JwtSettings jwtSettings) : IRequestHandler<GenerateTokenCommand, Result<TokenDto>>
     {
         private readonly ILogger<GenerateTokenCommandHandler> _logger = logger;
         private readonly IIdentityService _identityService = identityService;
         private readonly ITokenProvider _tokenProvider = tokenProvider;
         private readonly IAppDbContext _context = context;
         private readonly TimeProvider _datetime = datetime;
+        private readonly JwtSettings _jwtSettings = jwtSettings;
 
         public async Task<Result<TokenDto>> Handle(GenerateTokenCommand command, CancellationToken ct)
         {
+            //Allow Multi-Device Login
+
             var userResponse = await _identityService.AuthenticateAsync(command.Email, command.Password, ct);
 
             if (userResponse.IsError)
@@ -45,11 +50,13 @@ namespace MechanicShop.Application.Features.Identity.Commands.GenerateToken
 
             var userId = userResponse.Value.UserId;
 
+            var refreshTokenExpires = _datetime.GetUtcNow().AddDays(_jwtSettings.RefreshTokenExpirationInDays);
+
             var createRefreshTokenResult = Domain.Identity.RefreshToken.Create(
                Guid.NewGuid(),
                HashHelper.ComputeSha256(generatedTokenDto.RefreshToken),
                userId,
-               generatedTokenDto.ExpiresOnUtc,
+               refreshTokenExpires,
                _datetime);
 
             if (createRefreshTokenResult.IsError)
