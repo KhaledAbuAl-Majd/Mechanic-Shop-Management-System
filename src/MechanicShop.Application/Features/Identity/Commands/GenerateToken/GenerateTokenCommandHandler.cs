@@ -1,4 +1,5 @@
 ﻿using MechanicShop.Application.Common.Interfaces;
+using MechanicShop.Application.Common.Utilities;
 using MechanicShop.Application.Features.Identity.Dtos;
 using MechanicShop.Application.Features.Identity.Interfaces;
 using MechanicShop.Domain.Common.Results;
@@ -10,11 +11,15 @@ namespace MechanicShop.Application.Features.Identity.Commands.GenerateToken
     public sealed class GenerateTokenCommandHandler(
         ILogger<GenerateTokenCommandHandler> logger,
         IIdentityService identityService,
-        ITokenProvider tokenProvider) : IRequestHandler<GenerateTokenCommand, Result<TokenDto>>
+        ITokenProvider tokenProvider,
+        IAppDbContext context,
+        TimeProvider datetime) : IRequestHandler<GenerateTokenCommand, Result<TokenDto>>
     {
         private readonly ILogger<GenerateTokenCommandHandler> _logger = logger;
         private readonly IIdentityService _identityService = identityService;
         private readonly ITokenProvider _tokenProvider = tokenProvider;
+        private readonly IAppDbContext _context = context;
+        private readonly TimeProvider _datetime = datetime;
 
         public async Task<Result<TokenDto>> Handle(GenerateTokenCommand command, CancellationToken ct)
         {
@@ -36,7 +41,32 @@ namespace MechanicShop.Application.Features.Identity.Commands.GenerateToken
                 return generateTokenResult.Errors;
             }
 
-            return generateTokenResult.Value;
+            var generatedTokenDto = generateTokenResult.Value;
+
+            var userId = userResponse.Value.UserId;
+
+            var createRefreshTokenResult = Domain.Identity.RefreshToken.Create(
+               Guid.NewGuid(),
+               HashHelper.ComputeSha256(generatedTokenDto.RefreshToken),
+               userId,
+               generatedTokenDto.ExpiresOnUtc,
+               _datetime);
+
+            if (createRefreshTokenResult.IsError)
+            {
+                _logger.LogWarning("Create refresh token failed, error occured: {@Errors}", createRefreshTokenResult.Errors);
+                return createRefreshTokenResult.Errors;
+            }
+
+            var newRefreshToken = createRefreshTokenResult.Value;
+
+            _context.RefreshTokens.Add(newRefreshToken);
+
+            await _context.SaveChangesAsync(ct);
+
+            _logger.LogInformation("Token generated Successfully for user Id {id}", userId);
+
+            return generatedTokenDto;
         }
     }
 }
