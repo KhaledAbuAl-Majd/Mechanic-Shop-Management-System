@@ -19,6 +19,7 @@ namespace MechanicShop.Api.Controllers.V1
     [Route("v{version:apiVersion}/customers")]
     [ApiVersion("1.0")]
     [Authorize]
+    [Tags("Customers")]
     public class CustomersController(ISender sender, IOutputCacheStore cache) : ApiController
     {
         [HttpGet]
@@ -39,8 +40,9 @@ namespace MechanicShop.Api.Controllers.V1
             return result.Match(Ok, Problem);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}",Name = "GetCustomerById")]
         [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [ProducesDefaultResponseType]
@@ -95,6 +97,7 @@ namespace MechanicShop.Api.Controllers.V1
         [HttpPut("{id}")]
         [Authorize(Policy = AuthorizationPolicies.ManagerOnly)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [EndpointSummary("Updates an existing customer.")]
@@ -122,6 +125,7 @@ namespace MechanicShop.Api.Controllers.V1
         [HttpDelete("{id}")]
         [Authorize(Policy = AuthorizationPolicies.ManagerOnly)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [EndpointSummary("Removes a customer.")]
