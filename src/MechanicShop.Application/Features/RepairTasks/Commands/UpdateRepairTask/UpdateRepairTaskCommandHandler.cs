@@ -1,6 +1,7 @@
 ﻿using MechanicShop.Application.Common.Errors;
 using MechanicShop.Application.Common.Interfaces;
 using MechanicShop.Domain.Common.Results;
+using MechanicShop.Domain.RepairTasks;
 using MechanicShop.Domain.RepairTasks.Parts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,15 @@ namespace MechanicShop.Application.Features.RepairTasks.Commands.UpdateRepairTas
                 _logger.LogWarning("RepairTask {RepairTaskId} not found for update.", command.RepairTaskId);
 
                 return ApplicationErrors.RepairTaskNotFound;
+            }
+
+            var nameExists = await _context.RepairTasks.AnyAsync(p => p.Id != command.RepairTaskId && EF.Functions.Like(p.Name, command.Name), ct);
+
+            if (nameExists)
+            {
+                _logger.LogWarning("Duplicate repair task name '{Name}'.", command.Name);
+
+                return RepairTaskErrors.DuplicateName;
             }
 
             List<Part> validatedParts = [];

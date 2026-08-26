@@ -29,6 +29,9 @@ namespace MechanicShop.Domain.RepairTasks
             Error.Conflict("RepairTask.InUse", "Cannot delete a repair task that is used in work orders.");
 
         public readonly static Error DuplicateName =
+            Error.Conflict("RepairTask.Name.Duplicate", "A repair task same name already exists.");
+
+        public readonly static Error PartsDuplicateName =
             Error.Conflict("RepairTaskPart.Duplicate", "A part with the same name already exists in this repair task.");
     }
 }
