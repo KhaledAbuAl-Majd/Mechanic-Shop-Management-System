@@ -3,6 +3,7 @@ using Asp.Versioning;
 using MechanicShop.Api.Mappers.V1.Identity;
 using MechanicShop.Api.Requests.V1.Identity;
 using MechanicShop.Api.Responses.V1.Identity;
+using MechanicShop.Application.Common.Constants;
 using MechanicShop.Application.Features.Identity.Commands.GenerateToken;
 using MechanicShop.Application.Features.Identity.Commands.RefreshToken;
 using MechanicShop.Application.Features.Identity.Dtos;
@@ -64,6 +65,34 @@ namespace MechanicShop.Api.Controllers.V1
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var query = new GetUserByIdQuery(userId!);
+
+            var result = await sender.Send(query, ct);
+
+            return result.Match(response => Ok(response.ToResponse()), Problem);
+        }
+
+        [HttpGet("users/{id}")]
+        [Authorize]
+        [ProducesResponseType(typeof(AppUserResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [EndpointSummary("Gets user info by id.")]
+        [EndpointDescription("Returns user information for specified user id, access allowed only for user self or manager.")]
+        [EndpointName("GetUserInfoById")]
+        public async Task<ActionResult<AppUserResponse>> GetUserById([FromServices] IAuthorizationService authorizationService, Guid id, CancellationToken ct)
+        {
+            var authorizeResult = await authorizationService.AuthorizeAsync(User, id, AuthorizationPolicies.UserOwnerOrManager);
+
+            if (!authorizeResult.Succeeded)
+            {
+                var error = Domain.Common.Results.Error.Forbidden(description: "Access allowed only for user self or manager.");
+
+                return Problem([error]);
+            }
+
+            var query = new GetUserByIdQuery(id.ToString());
 
             var result = await sender.Send(query, ct);
 
