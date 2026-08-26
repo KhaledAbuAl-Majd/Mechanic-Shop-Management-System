@@ -112,11 +112,18 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IAuthorizationHandler, LaborAssignedHandler>();
+        services.AddScoped<IAuthorizationHandler, UserOwnerOrManagerHandler>();
 
         services.AddAuthorizationBuilder()
             .AddPolicy(AuthorizationPolicies.ManagerOnly, policy => policy.RequireRole(nameof(Role.Manager)))
+
             .AddPolicy(AuthorizationPolicies.SelfScopedWorkOrderAccess, policy =>
-            policy.Requirements.Add(new LaborAssignedRequirement()));
+            policy.Requirements.Add(new LaborAssignedRequirement()))
+
+            .AddPolicy(AuthorizationPolicies.UserOwnerOrManager, policy =>
+            {
+                policy.Requirements.Add(new UserOwnerOrManagerRequirement());
+            });
 
 
         services.TryAddScoped<IIdentityService, IdentityService>();
