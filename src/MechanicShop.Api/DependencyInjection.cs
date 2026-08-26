@@ -28,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddCustomProblemDetails(this IServiceCollection services)
+        private static IServiceCollection AddCustomProblemDetails(this IServiceCollection services)
         {
             services.AddProblemDetails(options =>
             {
@@ -42,7 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddCustomApiVersioning(this IServiceCollection services)
+        private static IServiceCollection AddCustomApiVersioning(this IServiceCollection services)
         {
             services.AddApiVersioning(options =>
             {
@@ -61,7 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddApiDocumentation(this IServiceCollection services)
+        private static IServiceCollection AddApiDocumentation(this IServiceCollection services)
         {
             string[] versions = ["v1"];
 
@@ -80,14 +80,14 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddExceptionHandling(this IServiceCollection services)
+        private static IServiceCollection AddExceptionHandling(this IServiceCollection services)
         {
             services.AddExceptionHandler<GlobalExceptionHandler>();
 
             return services;
         }
 
-        public static IServiceCollection AddControllerWithJsonConfiguration(this IServiceCollection services)
+        private static IServiceCollection AddControllerWithJsonConfiguration(this IServiceCollection services)
         {
             services.AddControllers().AddJsonOptions(options =>
             {
@@ -99,7 +99,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddCurrentUserService(this IServiceCollection services)
+        private static IServiceCollection AddCurrentUserService(this IServiceCollection services)
         {
             services.AddHttpContextAccessor();
             services.TryAddScoped<IUser, CurrentUser>();
@@ -112,6 +112,14 @@ namespace Microsoft.Extensions.DependencyInjection
             app.UseExceptionHandler();
 
             app.UseStatusCodePages();
+
+            app.UseHttpsRedirection();
+
+            app.UseRouting();
+
+            app.UseAuthentication();
+
+            app.UseAuthorization();
 
             return app;
         }
