@@ -1,7 +1,5 @@
-﻿using System.Reflection;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using Asp.Versioning;
-using FluentValidation;
 using MechanicShop.Api.Infrastructure;
 using MechanicShop.Api.OpenApi.Transformers;
 using MechanicShop.Api.Services;
@@ -72,7 +70,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 options.ApiVersionReader = new UrlSegmentApiVersionReader();
             })
             .AddMvc()
-            .AddApiExplorer(options=>
+            .AddApiExplorer(options =>
             {
                 options.GroupNameFormat = "'v'VVV";
                 options.SubstituteApiVersionInUrl = true;
@@ -85,7 +83,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             string[] versions = ["v1"];
 
-            foreach(var version in versions)
+            foreach (var version in versions)
             {
                 services.AddOpenApi(version, options =>
                 {
