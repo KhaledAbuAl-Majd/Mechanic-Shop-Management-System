@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using MechanicShop.Api.Requests.V1;
 using MechanicShop.Api.Requests.V1.Customers;
 using MechanicShop.Application.Common.Constants;
 using MechanicShop.Application.Common.Models;
@@ -9,6 +10,7 @@ using MechanicShop.Application.Features.Customers.Constants;
 using MechanicShop.Application.Features.Customers.Dtos;
 using MechanicShop.Application.Features.Customers.Queries.GetCustomerById;
 using MechanicShop.Application.Features.Customers.Queries.GetCustomers;
+using MechanicShop.Domain.Common.Results;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,17 +32,17 @@ namespace MechanicShop.Api.Controllers.V1
         [EndpointSummary("Retrieves a paginated list of customers.")]
         [EndpointDescription("Returns all customers paginated.")]
         [EndpointName("GetCustomers")]
-        [OutputCache(VaryByQueryKeys = ["page", "pageSize"], Duration = 60, Tags = [CustomerCache.Tag])]
-        public async Task<ActionResult<PaginatedList<CustomerListItemDto>>> Get(int page, int pageSize, CancellationToken ct)
+        [OutputCache(VaryByQueryKeys = ["*"], Duration = 60, Tags = [CustomerCache.Tag])]
+        public async Task<ActionResult<PaginatedList<CustomerListItemDto>>> Get([FromQuery] PageRequest pageRequest, CancellationToken ct)
         {
-            var query = new GetCustomersQuery(page, pageSize);
+            var query = new GetCustomersQuery(pageRequest.Page, pageRequest.PageSize);
 
             var result = await sender.Send(query, ct);
 
             return result.Match(Ok, Problem);
         }
 
-        [HttpGet("{id}",Name = "GetCustomerById")]
+        [HttpGet("{id}", Name = "GetCustomerById")]
         [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
