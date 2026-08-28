@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using MechanicShop.Api.Filters.Idempotency;
 using MechanicShop.Application.Common.Constants;
 using MechanicShop.Application.Features.Billing.Commands.IssueInvoice;
 using MechanicShop.Application.Features.Billing.Commands.SettleInvoice;
@@ -21,6 +22,7 @@ namespace MechanicShop.Api.Controllers.V1
     {
 
         [HttpPost("work-orders/{workOrderId}")]
+        [Idempotent]
         [ProducesResponseType(typeof(InvoiceDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]

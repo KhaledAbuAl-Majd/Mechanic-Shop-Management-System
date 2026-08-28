@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using MechanicShop.Api.Filters.Idempotency;
 using MechanicShop.Api.Requests.V1;
 using MechanicShop.Api.Requests.V1.WorkOrders;
 using MechanicShop.Application.Common.Constants;
@@ -83,6 +84,7 @@ namespace MechanicShop.Api.Controllers.V1
 
 
         [HttpPost]
+        [Idempotent]
         [Authorize(Policy = AuthorizationPolicies.ManagerOnly)]
         [ProducesResponseType(typeof(WorkOrderDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]

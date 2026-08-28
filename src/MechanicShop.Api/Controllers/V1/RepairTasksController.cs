@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using MechanicShop.Api.Filters.Idempotency;
 using MechanicShop.Api.Requests.V1.RepairTasks;
 using MechanicShop.Application.Common.Constants;
 using MechanicShop.Application.Features.RepairTasks.Commands.CreateRepairTask;
@@ -38,7 +39,7 @@ namespace MechanicShop.Api.Controllers.V1
             return result.Match(Ok, Problem);
         }
 
-        [HttpGet("{id}",Name = "GetRepairTaskById")]
+        [HttpGet("{id}", Name = "GetRepairTaskById")]
         [ProducesResponseType(typeof(RepairTaskDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -58,6 +59,7 @@ namespace MechanicShop.Api.Controllers.V1
         }
 
         [HttpPost]
+        [Idempotent]
         [Authorize(Policy = AuthorizationPolicies.ManagerOnly)]
         [ProducesResponseType(typeof(RepairTaskDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]

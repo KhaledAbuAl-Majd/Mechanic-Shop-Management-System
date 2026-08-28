@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using MechanicShop.Api.Filters.Idempotency;
 using MechanicShop.Api.Requests.V1;
 using MechanicShop.Api.Requests.V1.Customers;
 using MechanicShop.Application.Common.Constants;
@@ -10,7 +11,6 @@ using MechanicShop.Application.Features.Customers.Constants;
 using MechanicShop.Application.Features.Customers.Dtos;
 using MechanicShop.Application.Features.Customers.Queries.GetCustomerById;
 using MechanicShop.Application.Features.Customers.Queries.GetCustomers;
-using MechanicShop.Domain.Common.Results;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -65,6 +65,7 @@ namespace MechanicShop.Api.Controllers.V1
 
 
         [HttpPost]
+        [Idempotent]
         [Authorize(Policy = AuthorizationPolicies.ManagerOnly)]
         [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
