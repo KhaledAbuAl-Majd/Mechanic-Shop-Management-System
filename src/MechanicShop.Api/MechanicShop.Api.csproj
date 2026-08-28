@@ -25,8 +25,4 @@
     <ProjectReference Include="..\MechanicShop.Infrastructure\MechanicShop.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="OpenApi\Swagger\" />
-  </ItemGroup>
-
 </Project>
