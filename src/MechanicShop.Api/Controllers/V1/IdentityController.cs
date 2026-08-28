@@ -17,6 +17,7 @@ namespace MechanicShop.Api.Controllers.V1
     [Route("v{version:apiVersion}/identity")]
     [ApiVersion("1.0")]
     //[ApiVersionNeutral] 
+    [Tags("Identity")]
     public class IdentityController(ISender sender) : ApiController
     {
         [HttpPost("tokens/generate")]

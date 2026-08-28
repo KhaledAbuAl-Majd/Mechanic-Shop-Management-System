@@ -7,6 +7,10 @@ using MechanicShop.Application.Common.Interfaces;
 using MechanicShop.Application.Common.Settings;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using Serilog;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -24,10 +28,12 @@ namespace Microsoft.Extensions.DependencyInjection
                     .AddExceptionHandling()
                     .AddControllerWithJsonConfiguration()
                     .AddCurrentUserService()
-                    .AddAppOutputCaching();
+                    .AddAppOutputCaching().
+                    AddAppOpenTelememrty();
 
             return services;
         }
+
 
         private static IServiceCollection AddAppOutputCaching(this IServiceCollection services)
         {
@@ -42,6 +48,29 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 options.UseCaseSensitivePaths = false;
             });
+
+            return services;
+        }
+
+        private static IServiceCollection AddAppOpenTelememrty(this IServiceCollection services)
+        {
+            services.AddOpenTelemetry()
+              .ConfigureResource(res => res.AddService("mechanic-shop-service"))
+              .WithTracing(tracing =>
+              {
+                  tracing.AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation();
+
+                  tracing.AddOtlpExporter();
+              })
+              .WithMetrics(metices =>
+              {
+                  metices.AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation();
+
+                  metices.AddOtlpExporter()
+                    .AddPrometheusExporter();
+              });
 
             return services;
         }
@@ -135,6 +164,10 @@ namespace Microsoft.Extensions.DependencyInjection
             app.UseStatusCodePages();
 
             app.UseHttpsRedirection();
+
+            app.UseOpenTelemetryPrometheusScrapingEndpoint();
+
+            app.UseSerilogRequestLogging();
 
             app.UseRouting();
 
