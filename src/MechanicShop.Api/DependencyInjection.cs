@@ -92,8 +92,11 @@ namespace Microsoft.Extensions.DependencyInjection
                     options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
 
                     options.AddOperationTransformer<BearerSecurityOperationTransformer>();
+
+                    options.AddOperationTransformer<IdempotencyHeaderOperationTransformer>();
                 });
             }
+
 
             return services;
         }
