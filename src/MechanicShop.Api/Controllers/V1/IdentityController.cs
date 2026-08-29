@@ -3,6 +3,7 @@ using Asp.Versioning;
 using MechanicShop.Api.Mappers.V1.Identity;
 using MechanicShop.Api.Requests.V1.Identity;
 using MechanicShop.Api.Responses.V1.Identity;
+using MechanicShop.Api.Settings;
 using MechanicShop.Application.Common.Constants;
 using MechanicShop.Application.Features.Identity.Commands.GenerateToken;
 using MechanicShop.Application.Features.Identity.Commands.RefreshToken;
@@ -11,6 +12,7 @@ using MechanicShop.Application.Features.Identity.Queries.GetUserById;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace MechanicShop.Api.Controllers.V1
 {
@@ -21,8 +23,10 @@ namespace MechanicShop.Api.Controllers.V1
     public class IdentityController(ISender sender) : ApiController
     {
         [HttpPost("tokens/generate")]
+        [EnableRateLimiting(AuthRateLimiterOptions.PolicyName)]
         [ProducesResponseType(typeof(TokenDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [EndpointSummary("Generates an access and refresh token for a valid user.")]
         [EndpointDescription("Authenticates a user using provided credentials and returns a JWT token pair.")]
@@ -37,8 +41,10 @@ namespace MechanicShop.Api.Controllers.V1
         }
 
         [HttpPost("tokens/refresh")]
+        [EnableRateLimiting(AuthRateLimiterOptions.PolicyName)]
         [ProducesResponseType(typeof(TokenDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [EndpointSummary("Refreshes access token using a valid refresh token.")]
         [EndpointDescription("Exchanges an expired access token and a valid refresh token for a new token pair.")]

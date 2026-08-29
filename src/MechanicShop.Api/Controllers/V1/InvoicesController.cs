@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using MechanicShop.Api.Filters.Idempotency;
+using MechanicShop.Api.Settings;
 using MechanicShop.Application.Common.Constants;
 using MechanicShop.Application.Features.Billing.Commands.IssueInvoice;
 using MechanicShop.Application.Features.Billing.Commands.SettleInvoice;
@@ -11,6 +12,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace MechanicShop.Api.Controllers.V1
 {
@@ -65,10 +67,12 @@ namespace MechanicShop.Api.Controllers.V1
         }
 
         [HttpGet("{id}/pdf", Name = "GetInvoicePdfById")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status206PartialContent)]
+        [EnableRateLimiting(ConcurrencyRateLimiterOptions.PolicyName)]
+        [ProducesResponseType(typeof(FileContentResult),StatusCodes.Status200OK, "application/pdf")]
+        [ProducesResponseType(typeof(FileContentResult),StatusCodes.Status206PartialContent, "application/pdf")]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [EndpointSummary("Downloads the invoice as a PDF file.")]
         [EndpointDescription("Returns the invoice PDF file for the specified invoice ID. Only users with the Manager role are authorized.")]
