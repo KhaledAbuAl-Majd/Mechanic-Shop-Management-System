@@ -16,6 +16,7 @@ namespace MechanicShop.Application.Features.Customers.Queries.GetCustomers
             //not optimal way 
             var customers = await _context.Customers
                 .AsNoTracking()
+                .OrderByDescending(c=>c.CreatedAtUtc)
                 .Select(c => new CustomerListItemDto(c.Id, c.Name!, c.PhoneNumber!, c.Email!, c.Vehicles.Count()))
                 .ToPaginatedListAsync(request.Page, request.PageSize, ct);
 
