@@ -6,6 +6,7 @@
     <Project Path="src/MechanicShop.Infrastructure/MechanicShop.Infrastructure.csproj" Id="c57faf14-ca1c-44e8-a8d0-c52ff2871803" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/MechanicShop.Domain.UnitTests/MechanicShop.Domain.UnitTests.csproj" Id="aaeb6ccf-01aa-4b4a-bca3-f70ea7bd863d" />
     <Project Path="tests/MechanicShop.Tests.Common/MechanicShop.Tests.Common.csproj" Id="ab48f39f-3cbc-4874-be87-0e598db5276a" />
   </Folder>
 </Solution>
