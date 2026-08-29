@@ -42,6 +42,12 @@ namespace MechanicShop.Domain.RepairTasks
             if (!Enum.IsDefined(estimatedDurationInMins))
                 return RepairTaskErrors.DurationInvalid;
 
+            if (parts is null || parts.Count == 0)
+                return RepairTaskErrors.PartsRequired;
+
+            if (parts.DistinctBy(p => p.Name?.Trim(), StringComparer.OrdinalIgnoreCase).Count() < parts.Count)
+                return RepairTaskErrors.PartsDuplicateName;
+
             return new RepairTask(id, name.Trim(), laborCost, estimatedDurationInMins, parts);
         }
 
@@ -67,6 +73,9 @@ namespace MechanicShop.Domain.RepairTasks
         {
             if (incomingParts is null || incomingParts.Count == 0)
                 return RepairTaskErrors.PartsRequired;
+
+            if (incomingParts.DistinctBy(p => p.Name?.Trim(), StringComparer.OrdinalIgnoreCase).Count() < incomingParts.Count)
+                return RepairTaskErrors.PartsDuplicateName;
 
             //remove deleted parts
             _parts.RemoveAll(existing => incomingParts.All(p => p.Id != existing.Id));

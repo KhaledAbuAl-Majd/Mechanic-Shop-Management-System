@@ -10,6 +10,8 @@ namespace MechanicShop.Infrastructure.Data.Configurations
         {
             builder.ToTable("Employees");
 
+            builder.Property(v => v.Id).ValueGeneratedNever();
+
             builder.HasKey(b => b.Id).IsClustered(false);
 
             builder.Property(b => b.FirstName).IsRequired().HasMaxLength(50);

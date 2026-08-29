@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using MechanicShop.Application.Common;
 using MechanicShop.Application.Common.Constants;
 using MechanicShop.Application.Common.Interfaces;
 using MechanicShop.Application.Common.Settings;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
@@ -46,16 +48,16 @@ public static class DependencyInjection
         services.AddData(connectionString);
         services.AddIdentity(jwtSettings);
         services.AddServices();
-
+        services.AddCaching(configuration);
 
         return services;
     }
 
-    private static IServiceCollection AddData(this IServiceCollection services,string connectionString)
+    private static IServiceCollection AddData(this IServiceCollection services, string connectionString)
     {
         services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
 
-        services.AddDbContext<AppDbContext>((sp,options) =>
+        services.AddDbContext<AppDbContext>((sp, options) =>
         {
             options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
             options.UseSqlServer(connectionString);
@@ -110,11 +112,18 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IAuthorizationHandler, LaborAssignedHandler>();
+        services.AddScoped<IAuthorizationHandler, UserOwnerOrManagerHandler>();
 
         services.AddAuthorizationBuilder()
             .AddPolicy(AuthorizationPolicies.ManagerOnly, policy => policy.RequireRole(nameof(Role.Manager)))
+
             .AddPolicy(AuthorizationPolicies.SelfScopedWorkOrderAccess, policy =>
-            policy.Requirements.Add(new LaborAssignedRequirement()));
+            policy.Requirements.Add(new LaborAssignedRequirement()))
+
+            .AddPolicy(AuthorizationPolicies.UserOwnerOrManager, policy =>
+            {
+                policy.Requirements.Add(new UserOwnerOrManagerRequirement());
+            });
 
 
         services.TryAddScoped<IIdentityService, IdentityService>();
@@ -128,6 +137,33 @@ public static class DependencyInjection
 
         services.TryAddSingleton<IInvoicePdfGenerator, InvoicePdfGenerator>();
         services.TryAddSingleton<INotificationService, NotificationService>();
+        services.TryAddSingleton<IWorkOrderNotifier, WorkOrderNotifier>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddCaching(this IServiceCollection services, IConfiguration configuration)
+    {
+        var redisConnectionString = configuration.GetConnectionString("Redis");
+
+        if (!string.IsNullOrWhiteSpace(redisConnectionString))
+        {
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisConnectionString;
+                options.InstanceName = "MechanicShop:01:";
+            });
+        }
+
+        services.AddHybridCache(options =>
+        {
+            //default options (if you don't override it)
+            options.DefaultEntryOptions = new HybridCacheEntryOptions
+            {
+                Expiration = TimeSpan.FromMinutes(10),//distrubuted cache - L2
+                LocalCacheExpiration = TimeSpan.FromSeconds(40)//Memory cache - L1
+            };
+        });
 
         return services;
     }

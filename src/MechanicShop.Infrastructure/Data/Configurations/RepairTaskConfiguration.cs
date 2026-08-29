@@ -10,6 +10,8 @@ namespace MechanicShop.Infrastructure.Data.Configurations
         {
             builder.ToTable("RepairTasks");
 
+            builder.Property(v => v.Id).ValueGeneratedNever();
+
             builder.HasKey(rt => rt.Id).IsClustered(false);
 
             builder.Property(rt => rt.Name).IsRequired().HasMaxLength(100);

@@ -29,7 +29,7 @@ namespace MechanicShop.Application.Features.RepairTasks.Commands.CreateRepairTas
 
             foreach (var part in command.Parts)
             {
-                var partResult = Part.Create(Guid.NewGuid(), part.Name, part.Cost, part.Quantity);
+                var partResult = Part.Create(Guid.NewGuid(), part.Name.Trim(), part.Cost, part.Quantity);
 
                 if (partResult.IsError)
                     return partResult.Errors;

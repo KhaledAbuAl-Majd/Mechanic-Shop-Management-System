@@ -10,13 +10,15 @@ namespace MechanicShop.Infrastructure.Data.Configurations
         {
             builder.ToTable("Invoices");
 
+            builder.Property(v => v.Id).ValueGeneratedNever();
+
             builder.HasKey(i => i.Id).IsClustered(false);
 
             builder.Property(i => i.IssuedAtUtc).IsRequired();
 
-            builder.Property(i => i.DiscountAmount).HasDefaultValue(0).HasPrecision(18, 2).IsRequired();
+            builder.Property(i => i.DiscountAmount).HasDefaultValue(0m).HasPrecision(18, 2).IsRequired();
 
-            builder.Property(i => i.TaxAmount).HasDefaultValue(0).HasPrecision(18, 2);
+            builder.Property(i => i.TaxAmount).HasDefaultValue(0m).HasPrecision(18, 2);
 
             builder.Property(i => i.PaidAt).IsRequired(false);
 

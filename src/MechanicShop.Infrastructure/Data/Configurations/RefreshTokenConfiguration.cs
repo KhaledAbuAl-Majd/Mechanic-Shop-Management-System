@@ -10,6 +10,8 @@ namespace MechanicShop.Infrastructure.Data.Configurations
         {
             builder.ToTable("RefreshTokens");
 
+            builder.Property(v => v.Id).ValueGeneratedNever();
+
             builder.HasKey(rt => rt.Id).IsClustered(false);
 
             builder.Property(rt => rt.TokenHash).HasMaxLength(100).IsUnicode(false);

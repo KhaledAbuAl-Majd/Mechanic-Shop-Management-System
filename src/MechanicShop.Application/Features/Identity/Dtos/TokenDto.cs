@@ -3,5 +3,5 @@
     public sealed record TokenDto(
         string AccessToken,
         string RefreshToken,
-        DateTime ExpiresOnUtc);
+        DateTimeOffset ExpiresOnUtc);
 }

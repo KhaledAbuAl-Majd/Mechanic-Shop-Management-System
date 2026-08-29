@@ -43,15 +43,15 @@ namespace MechanicShop.Application.Common.Errors
                 "RefreshToken.Expiry.Invalid",
                 "Expiry must be in the future.");
 
-        public static readonly Error ExpiredAccessTokenInvalid = Error.Conflict(
+        public static readonly Error ExpiredAccessTokenInvalid = Error.Validation(
              code: "Auth.ExpiredAccessToken.Invalid",
              description: "Expired access token is not valid.");
 
-        public static readonly Error UserIdClaimInvalid = Error.Conflict(
+        public static readonly Error UserIdClaimInvalid = Error.Validation(
             code: "Auth.UserIdClaim.Invalid",
             description: "Invalid userId claim.");
 
-        public static readonly Error RefreshTokenExpired = Error.Conflict(
+        public static readonly Error RefreshTokenExpired = Error.Validation(
             code: "Auth.RefreshToken.Expired",
             description: "Refresh token is invalid or has expired.");
 

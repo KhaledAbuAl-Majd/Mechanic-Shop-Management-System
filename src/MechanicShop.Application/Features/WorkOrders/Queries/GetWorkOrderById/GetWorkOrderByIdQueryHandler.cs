@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MechanicShop.Application.Features.WorkOrders.Queries.GetWorkOrderById
 {
-    public sealed class GetWorkOrderByIdQueryHandler(Logger<GetWorkOrderByIdQueryHandler> logger,
+    public sealed class GetWorkOrderByIdQueryHandler(ILogger<GetWorkOrderByIdQueryHandler> logger,
         IAppDbContext context) : IRequestHandler<GetWorkOrderByIdQuery, Result<WorkOrderDto>>
     {
         private readonly ILogger<GetWorkOrderByIdQueryHandler> _logger = logger;

@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using MechanicShop.Application.Common.Errors;
 using MechanicShop.Application.Common.Interfaces;
+using MechanicShop.Application.Common.Settings;
 using MechanicShop.Application.Common.Utilities;
 using MechanicShop.Application.Features.Identity.Dtos;
 using MechanicShop.Application.Features.Identity.Interfaces;
@@ -16,17 +17,28 @@ namespace MechanicShop.Application.Features.Identity.Commands.RefreshToken
         IIdentityService identityService,
         IAppDbContext context,
         ITokenProvider tokenProvider,
-        TimeProvider datetime) : IRequestHandler<RefreshTokenCommand, Result<TokenDto>>
+        TimeProvider datetime,
+        JwtSettings jwtSettings) : IRequestHandler<RefreshTokenCommand, Result<TokenDto>>
     {
         private readonly ILogger<RefreshTokenCommandHandler> _logger = logger;
         private readonly IIdentityService _identityService = identityService;
         private readonly IAppDbContext _context = context;
         private readonly ITokenProvider _tokenProvider = tokenProvider;
         private readonly TimeProvider _datetime = datetime;
+        private readonly JwtSettings _jwtSettings = jwtSettings;
 
         public async Task<Result<TokenDto>> Handle(RefreshTokenCommand command, CancellationToken ct)
         {
-            var principal = _tokenProvider.GetPrincipalFromExpiredToken(command.ExpiredAccessToken);
+            var getPrincipalResult = _tokenProvider.GetPrincipalFromExpiredToken(command.ExpiredAccessToken);
+
+            if (getPrincipalResult.IsError)
+            {
+                _logger.LogWarning("Get principal from token failed, errors: {@Errors}", getPrincipalResult.Errors);
+
+                return getPrincipalResult.Errors;
+            }
+
+            var principal = getPrincipalResult.Value;
 
             if (principal is null)
             {
@@ -87,11 +99,13 @@ namespace MechanicShop.Application.Features.Identity.Commands.RefreshToken
                 return revokeTokenResult.Errors;
             }
 
+            var refreshTokenExpires = _datetime.GetUtcNow().AddDays(_jwtSettings.RefreshTokenExpirationInDays);
+
             var createRefreshTokenResult = Domain.Identity.RefreshToken.Create(
                 Guid.NewGuid(),
                 HashHelper.ComputeSha256(generatedTokenDto.RefreshToken),
                 userId,
-                generatedTokenDto.ExpiresOnUtc,
+                refreshTokenExpires,
                 _datetime);
 
             if (createRefreshTokenResult.IsError)

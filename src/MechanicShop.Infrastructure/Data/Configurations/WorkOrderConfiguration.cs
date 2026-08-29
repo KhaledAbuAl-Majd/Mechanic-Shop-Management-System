@@ -11,6 +11,8 @@ namespace MechanicShop.Infrastructure.Data.Configurations
         {
             builder.ToTable("WorkOrders");
 
+            builder.Property(v => v.Id).ValueGeneratedNever();
+
             builder.HasKey(wo => wo.Id).IsClustered(false);
 
             builder.Property(wo => wo.LaborId).IsRequired();
@@ -28,9 +30,9 @@ namespace MechanicShop.Infrastructure.Data.Configurations
 
             builder.Property(wo => wo.EndAtUtc).IsRequired();
 
-            builder.Property(wo => wo.Tax).HasDefaultValue(0).HasPrecision(18, 2);
+            builder.Property(wo => wo.Tax).HasDefaultValue(0m).HasPrecision(18, 2);
 
-            builder.Property(wo => wo.Discount).HasDefaultValue(0).HasPrecision(18, 2);
+            builder.Property(wo => wo.Discount).HasDefaultValue(0m).HasPrecision(18, 2);
 
             builder.HasMany(wo => wo.RepairTasks)
                 .WithMany()

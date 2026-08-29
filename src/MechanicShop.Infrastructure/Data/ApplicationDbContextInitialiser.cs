@@ -81,7 +81,7 @@ namespace MechanicShop.Infrastructure.Data
             //    }
             //}
 
-            //define default users
+            // define default users
             var manager = new AppUser
             {
                 Id = "19a59129-6c20-417a-834d-11a208d32d96",
@@ -90,16 +90,40 @@ namespace MechanicShop.Infrastructure.Data
                 EmailConfirmed = true,
             };
 
-            if (!await _userManager.Users.AnyAsync(u => u.Email == manager.Email))
+            var testManager = new AppUser
             {
-                //password same as email
-                await _userManager.CreateAsync(manager, manager.Email);
+                Id = "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+                Email = "manager@test",
+                UserName = "manager@test",
+                EmailConfirmed = true,
+            };
 
-                if (!string.IsNullOrWhiteSpace(managerRole.Name))
+            var defaultManagers = new List<AppUser>
+            {
+                manager,
+                testManager
+            };
+
+            foreach (var mgr in defaultManagers)
+            {
+                if (!await _userManager.Users.AnyAsync(u => u.Email == mgr.Email))
                 {
-                    await _userManager.AddToRoleAsync(manager, managerRole.Name);
+                    await _userManager.CreateAsync(mgr, mgr.Email!);
+
+                    if (!string.IsNullOrWhiteSpace(managerRole.Name))
+                    {
+                        await _userManager.AddToRoleAsync(mgr, managerRole.Name);
+                    }
                 }
             }
+
+            var testLabor = new AppUser
+            {
+                Id = "28b68230-7d31-428b-945e-22b309e43e07",
+                Email = "labor@test",
+                UserName = "labor@test",
+                EmailConfirmed = true
+            };
 
             var labor01 = new AppUser
             {
@@ -108,7 +132,6 @@ namespace MechanicShop.Infrastructure.Data
                 UserName = "john.labor@localhost",
                 EmailConfirmed = true
             };
-
 
             var labor02 = new AppUser
             {
@@ -136,7 +159,11 @@ namespace MechanicShop.Infrastructure.Data
 
             var defaultLabors = new List<AppUser>
             {
-               labor01,labor02,labor03,labor04
+                testLabor,
+                labor01,
+                labor02,
+                labor03,
+                labor04
             };
 
             foreach (var labor in defaultLabors)
@@ -153,11 +180,12 @@ namespace MechanicShop.Infrastructure.Data
             }
 
             // create employees
-
             if (!await _context.Employees.AnyAsync())
             {
                 List<Employee> employees = [
                     Employee.Create(Guid.Parse(manager.Id), "Primary", "Manager", Role.Manager).Value,
+                    Employee.Create(Guid.Parse(testManager.Id), "Test", "Manager", Role.Manager).Value,
+                    Employee.Create(Guid.Parse(testLabor.Id), "Test", "Labor", Role.Labor).Value,
                     Employee.Create(Guid.Parse(labor01.Id), "John", "S.", Role.Labor).Value,
                     Employee.Create(Guid.Parse(labor02.Id), "Peter", "R.", Role.Labor).Value,
                     Employee.Create(Guid.Parse(labor03.Id), "Kevin", "M.", Role.Labor).Value,
