@@ -8,16 +8,17 @@ public static class CustomerFactory
 {
     public static Result<Customer> CreateCustomer(
         Guid? id = null,
-        string? name = null,
-        string? phoneNumber = null,
-        string? email = null,
+        string? name = "khaled abu al-majd",
+        string? phoneNumber = "+202358933",
+        string? email = "khaledabualmajd06@gmail.com",
         List<Vehicle>? vehicles = null)
     {
         return Customer.Create(
             id ?? Guid.NewGuid(),
-            name ?? "khaled abu al-majd",
-            phoneNumber ?? "+202358933",
-            email ?? "khaledabualmajd06@gmail.com",
+            name!,
+            phoneNumber!,
+            email!,
             vehicles ?? [VehicleFactory.CreateVehicle().Value]);
     }
+
 }

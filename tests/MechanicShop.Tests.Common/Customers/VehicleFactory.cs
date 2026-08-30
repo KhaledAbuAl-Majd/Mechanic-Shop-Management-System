@@ -7,16 +7,16 @@ public static class VehicleFactory
 {
     public static Result<Vehicle> CreateVehicle(
         Guid? id = null,
-        string? make = null,
-        string? model = null,
+        string? make = "BMW",
+        string? model = "M5",
         int? year = null,
-        string? licensePlate = null)
+        string? licensePlate = "tec 353")
     {
         return Vehicle.Create(
             id ?? Guid.NewGuid(),
-            make ?? "BMW",
-            model ?? "M5",
+            make!,
+            model!,
             year ?? 2025,
-            licensePlate ?? "tec 353");
+            licensePlate!);
     }
 }

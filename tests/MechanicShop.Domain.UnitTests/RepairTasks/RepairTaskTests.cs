@@ -54,7 +54,13 @@ public class RepairTaskTests
     [MemberData(nameof(InvalidPartsData))]
     public void Create_ShouldReturnError_WhenPartsInvalid(List<Part> parts)
     {
-        var result = RepairTaskFactory.CreateRepairTask(parts: parts);
+        var result = RepairTask.Create(
+            id: Guid.NewGuid(),
+            name: "oil change",
+            laborCost: 75m,
+            estimatedDurationInMins: RepairDurationInMinutes.Min30,
+            parts: parts);
+
 
         Assert.False(result.IsSuccess);
         Assert.Equal(RepairTaskErrors.PartsRequired.Code, result.TopError.Code);
@@ -80,7 +86,7 @@ public class RepairTaskTests
         string name = "filter";
         decimal laborCost = 80m;
         RepairDurationInMinutes duration = RepairDurationInMinutes.Min45;
-        List<Part> parts = [PartFactory.CreatePart().Value, PartFactory.CreatePart().Value];
+        List<Part> parts = [PartFactory.CreatePart(name: "part 1").Value, PartFactory.CreatePart(name: "part 2").Value];
 
         var totalCost = laborCost + parts.Sum(x => x.Quantity * x.Cost);
 
@@ -201,7 +207,7 @@ public class RepairTaskTests
     {
 
         var part1 = PartFactory.CreatePart(name: "oil filter").Value;
-        var part2 = PartFactory.CreatePart().Value;
+        var part2 = PartFactory.CreatePart(name:"oil").Value;
 
         var repairTask = RepairTaskFactory.CreateRepairTask(parts: [part1, part2]).Value;
 

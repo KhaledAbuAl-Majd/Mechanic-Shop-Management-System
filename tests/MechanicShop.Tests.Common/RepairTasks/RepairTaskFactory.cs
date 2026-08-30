@@ -9,14 +9,14 @@ public static class RepairTaskFactory
 {
     public static Result<RepairTask> CreateRepairTask(
         Guid? id = null,
-        string? name = null,
+        string? name = "Oil Change",
         decimal? laborCost = null,
         RepairDurationInMinutes? estimatedDurationInMins = null,
         List<Part>? parts = null)
     {
         return RepairTask.Create(
             id ?? Guid.NewGuid(),
-            name ?? "Oil Change",
+            name!,
             laborCost ?? 75m,
             estimatedDurationInMins ?? RepairDurationInMinutes.Min30,
             parts ?? [PartFactory.CreatePart().Value]);

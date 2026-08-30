@@ -8,31 +8,31 @@ public static class EmployeeFactory
 {
     public static Result<Employee> CreateEmployee(
         Guid? id = null,
-        string? firstName = null,
-        string? lastName = null,
+        string? firstName = "ahmed",
+        string? lastName = "ali",
         Role? role = null)
     {
         return Employee.Create(
             id ?? Guid.NewGuid(),
-            firstName ?? "ahmed",
-            lastName ?? "ali",
+            firstName!,
+            lastName!,
             role ?? Role.Labor);
     }
 
     public static Result<Employee> CreateLabor(
        Guid? id = null,
-       string? firstName = null,
-       string? lastName = null
+       string? firstName = "ahmed",
+        string? lastName = "labor"
       )
     {
-        return CreateEmployee(id, firstName, lastName ?? "labor", Role.Labor);
+        return CreateEmployee(id, firstName, lastName, Role.Labor);
     }
 
     public static Result<Employee> CreateManager(
        Guid? id = null,
-       string? firstName = null,
-       string? lastName = null)
+       string? firstName = "ahmed",
+        string? lastName = "manager")
     {
-        return CreateEmployee(id, firstName, lastName ?? "manager", Role.Manager);
+        return CreateEmployee(id, firstName, lastName, Role.Manager);
     }
 }

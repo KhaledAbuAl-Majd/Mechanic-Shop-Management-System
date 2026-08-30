@@ -234,6 +234,8 @@ public class CustomerTests
     {
         var original = VehicleFactory.CreateVehicle(make: "Ford").Value;
 
+        var oldMake = original.Make;
+
         var customer = CustomerFactory.CreateCustomer(vehicles: [original]).Value;
 
         var updatedVehicle = VehicleFactory.CreateVehicle(id: original.Id, make: "BMW").Value;
@@ -245,7 +247,7 @@ public class CustomerTests
         Assert.True(result.IsSuccess);
         Assert.Equal(Result.Updated, result.Value);
         Assert.Equal(2, customer.Vehicles.Count());
-        Assert.Contains(customer.Vehicles, v => v.Id == updatedVehicle.Id && v.Make != original.Make);
+        Assert.Contains(customer.Vehicles, v => v.Id == updatedVehicle.Id && v.Make != oldMake);
         Assert.Contains(customer.Vehicles, v => v.Id == newVehicle.Id);
     }
 }

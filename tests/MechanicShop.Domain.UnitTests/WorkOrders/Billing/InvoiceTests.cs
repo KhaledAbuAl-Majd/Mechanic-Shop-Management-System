@@ -31,7 +31,16 @@ public class InvoiceTests
     [MemberData(nameof(InvalidInvoiceLineItemsData))]
     public void Create_ShouldReturnError_WhenInvoiceLineItemsInvalid(List<InvoiceLineItem>? items)
     {
-        var result = InvoiceFactory.CreateInvoice(items: items);
+        var result = Invoice.Create(
+            id: Guid.NewGuid(),
+            workOrderId: Guid.NewGuid(),
+            items: items!,
+            discountAmount: 0,
+            taxAmount: 0,
+            datetime: TimeProvider.System);
+
+
+        InvoiceFactory.CreateInvoice(items: items);
 
         Assert.False(result.IsSuccess);
         Assert.Equal(InvoiceErrors.LineItemsEmpty.Code, result.TopError.Code);

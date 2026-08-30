@@ -7,13 +7,13 @@ namespace MechanicShop.Tests.Common.RepairTasks
     {
         public static Result<Part> CreatePart(
             Guid? id = null,
-            string? name = null,
+            string? name = "Oil filter",
             decimal? cost = null,
             int? quantity = null)
         {
             return Part.Create(
                 id ?? Guid.NewGuid(),
-                name ?? "Oil Filter",
+                name!,
                 cost ?? 100,
                 quantity ?? 3);
         }
