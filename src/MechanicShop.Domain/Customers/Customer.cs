@@ -44,6 +44,11 @@ namespace MechanicShop.Domain.Customers
             if (string.IsNullOrWhiteSpace(email))
                 return CustomerErrors.EmailRequired;
 
+            if (!Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            {
+                return CustomerErrors.EmailInvalid;
+            }
+
             try
             {
                 _ = new MailAddress(email);
@@ -71,6 +76,11 @@ namespace MechanicShop.Domain.Customers
 
             if (string.IsNullOrWhiteSpace(email))
                 return CustomerErrors.EmailRequired;
+
+            if (!Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            {
+                return CustomerErrors.EmailInvalid;
+            }
 
             try
             {
