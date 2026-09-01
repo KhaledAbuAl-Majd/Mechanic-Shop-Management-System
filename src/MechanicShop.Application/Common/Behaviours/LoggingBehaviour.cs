@@ -4,12 +4,12 @@ using Microsoft.Extensions.Logging;
 
 namespace MechanicShop.Application.Common.Behaviours
 {
-    public class LoggingBehaviour<TRequest>(ILogger<LoggingBehaviour<TRequest>> Logger,
+    public class LoggingBehaviour<TRequest>(ILogger<TRequest> Logger,
         IUser User,
         IIdentityService IdentityService) : IRequestPreProcessor<TRequest>
         where TRequest : notnull
     {
-        private readonly ILogger<LoggingBehaviour<TRequest>> _logger = Logger;
+        private readonly ILogger<TRequest> _logger = Logger;
         private readonly IUser _user = User;
         private readonly IIdentityService _identityService = IdentityService;
 
