@@ -13,7 +13,7 @@ namespace MechanicShop.Domain.Customers
         public string? Email { get; private set; }
 
         private readonly List<Vehicle> _vehicles = [];
-        public IEnumerable<Vehicle> Vehicles => _vehicles.AsReadOnly();
+        public IEnumerable<Vehicle> Vehicles => _vehicles?.AsReadOnly()!;
 
         private Customer() { }
 
