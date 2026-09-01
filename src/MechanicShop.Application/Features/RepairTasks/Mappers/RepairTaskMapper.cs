@@ -1,4 +1,5 @@
 ﻿using MechanicShop.Application.Features.RepairTasks.Dtos;
+using MechanicShop.Domain.Common;
 using MechanicShop.Domain.RepairTasks;
 using MechanicShop.Domain.RepairTasks.Parts;
 
@@ -20,6 +21,8 @@ namespace MechanicShop.Application.Features.RepairTasks.Mappers
         }
         public static List<RepairTaskDto> ToDtos(this IEnumerable<RepairTask> entities)
         {
+            ArgumentNullException.ThrowIfNull(entities);
+
             return [.. entities.Select(ToDto)];
         }
 
@@ -31,6 +34,8 @@ namespace MechanicShop.Application.Features.RepairTasks.Mappers
         }
         public static List<PartDto> ToDtos(this IEnumerable<Part> entities)
         {
+            ArgumentNullException.ThrowIfNull(entities);
+
             return [.. entities.Select(ToDto)];
         }
     }

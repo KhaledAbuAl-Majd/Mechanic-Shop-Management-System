@@ -45,7 +45,7 @@ namespace MechanicShop.Domain.RepairTasks
             if (parts is null || parts.Count == 0)
                 return RepairTaskErrors.PartsRequired;
 
-            if (parts.DistinctBy(p => p.Name?.Trim(), StringComparer.OrdinalIgnoreCase).Count() < parts.Count)
+            if (parts.DistinctBy(p => p?.Name?.Trim(), StringComparer.OrdinalIgnoreCase).Count() < parts.Count)
                 return RepairTaskErrors.PartsDuplicateName;
 
             return new RepairTask(id, name.Trim(), laborCost, estimatedDurationInMins, parts);
@@ -74,7 +74,7 @@ namespace MechanicShop.Domain.RepairTasks
             if (incomingParts is null || incomingParts.Count == 0)
                 return RepairTaskErrors.PartsRequired;
 
-            if (incomingParts.DistinctBy(p => p.Name?.Trim(), StringComparer.OrdinalIgnoreCase).Count() < incomingParts.Count)
+            if (incomingParts.DistinctBy(p => p?.Name?.Trim(), StringComparer.OrdinalIgnoreCase).Count() < incomingParts.Count)
                 return RepairTaskErrors.PartsDuplicateName;
 
             //remove deleted parts
