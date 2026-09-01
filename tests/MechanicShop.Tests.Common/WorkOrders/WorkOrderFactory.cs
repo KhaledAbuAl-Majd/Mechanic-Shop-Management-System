@@ -15,7 +15,7 @@ public static class WorkOrderFactory
         DateTimeOffset? endAt = null,
         Guid? laborId = null,
         Spot? spot = null,
-        List<RepairTask>? repairTasks = null)
+        List<RepairTask>? repairTasks = null, bool setListIfNull = true)
     {
         return WorkOrder.Create(
             id ?? Guid.NewGuid(),
@@ -24,6 +24,6 @@ public static class WorkOrderFactory
             endAt ?? DateTimeOffset.UtcNow.AddHours(1),
             laborId ?? Guid.NewGuid(),
             spot ?? Spot.B,
-            repairTasks ?? [RepairTaskFactory.CreateRepairTask().Value]);
+           setListIfNull ? repairTasks ?? [RepairTaskFactory.CreateRepairTask().Value] : repairTasks!);
     }
 }

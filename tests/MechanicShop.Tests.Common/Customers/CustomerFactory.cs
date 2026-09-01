@@ -11,14 +11,14 @@ public static class CustomerFactory
         string? name = "khaled abu al-majd",
         string? phoneNumber = "+202358933",
         string? email = "khaledabualmajd06@gmail.com",
-        List<Vehicle>? vehicles = null)
+        List<Vehicle>? vehicles = null, bool setListIfNull = true)
     {
         return Customer.Create(
             id ?? Guid.NewGuid(),
             name!,
             phoneNumber!,
             email!,
-            vehicles ?? [VehicleFactory.CreateVehicle().Value]);
+           setListIfNull ? vehicles ?? [VehicleFactory.CreateVehicle().Value] : vehicles!);
     }
 
 }

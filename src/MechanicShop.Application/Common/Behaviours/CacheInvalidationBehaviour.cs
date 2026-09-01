@@ -15,7 +15,7 @@ namespace MechanicShop.Application.Common.Behaviours
         private readonly ILogger<CacheInvalidationBehaviour<TRequest, TResponse>> _logger = logger;
         private readonly HybridCache _cache = cache;
 
-        async Task<TResponse> IPipelineBehavior<TRequest, TResponse>.Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken ct)
+        public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken ct)
         {
             var response = await next();
 
