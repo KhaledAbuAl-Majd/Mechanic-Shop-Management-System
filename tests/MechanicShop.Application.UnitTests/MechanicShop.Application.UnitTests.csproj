@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\MechanicShop.Application\MechanicShop.Application.csproj" />
+    <ProjectReference Include="..\MechanicShop.Tests.Common\MechanicShop.Tests.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
