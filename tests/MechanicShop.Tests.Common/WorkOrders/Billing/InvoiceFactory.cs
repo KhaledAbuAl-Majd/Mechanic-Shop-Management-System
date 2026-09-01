@@ -12,12 +12,12 @@ public static class InvoiceFactory
         List<InvoiceLineItem>? items = null,
         decimal? discountAmount = null,
         decimal? taxAmount = null,
-        TimeProvider? datetime = null)
+        TimeProvider? datetime = null, bool setListIfNull = true)
     {
         return Invoice.Create(
             id ?? Guid.NewGuid(),
             workOrderId ?? Guid.NewGuid(),
-            items ?? [InvoiceLineItemFactory.CreateInvoiceLineItem().Value],
+           setListIfNull ? items ?? [InvoiceLineItemFactory.CreateInvoiceLineItem().Value] : items!,
             discountAmount ?? 0,
             taxAmount ?? 0,
             datetime ?? TimeProvider.System);

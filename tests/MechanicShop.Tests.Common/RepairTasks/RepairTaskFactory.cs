@@ -12,13 +12,13 @@ public static class RepairTaskFactory
         string? name = "Oil Change",
         decimal? laborCost = null,
         RepairDurationInMinutes? estimatedDurationInMins = null,
-        List<Part>? parts = null)
+        List<Part>? parts = null, bool setListIfNull = true)
     {
         return RepairTask.Create(
             id ?? Guid.NewGuid(),
             name!,
             laborCost ?? 75m,
             estimatedDurationInMins ?? RepairDurationInMinutes.Min30,
-            parts ?? [PartFactory.CreatePart().Value]);
+            setListIfNull? parts ?? [PartFactory.CreatePart().Value]: parts!);
     }
 }
