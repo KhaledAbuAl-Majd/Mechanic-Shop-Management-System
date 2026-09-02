@@ -198,38 +198,49 @@ namespace MechanicShop.Infrastructure.Data
             //default customers and vehicles
             if (!await _context.Customers.AnyAsync())
             {
-                List<Vehicle> vehicles = [
-                            Vehicle.Create(
-                                id: Guid.Parse("61401e63-007b-4b1c-8914-9eb6e9bd95c5"),
-                                make: "Toyota",
-                                model: "Camry",
-                                year: 2020,
-                                licensePlate: "ABC123").Value,
-
+                var customer1 = Customer.Create(
+                    id: Guid.Parse("f522bbe5-e3b1-4e2c-a8a3-c41550dcf39d"),
+                    name: "John Doe",
+                    phoneNumber: "123456789",
+                    email: "john.doe@example.com",
+                    vehicles: [
                         Vehicle.Create(
-                            id: Guid.Parse("13c80914-41ad-4d46-b7bb-60f6c89ad01e"),
-                            make: "Honda",
-                            model: "Civic",
-                            year: 2018,
-                            licensePlate: "XYZ456").Value,
-                    ];
+                id: Guid.Parse("61401e63-007b-4b1c-8914-9eb6e9bd95c5"),
+                make: "Toyota",
+                model: "Camry",
+                year: 2020,
+                licensePlate: "ABC123").Value,
 
-                _context.Customers.AddRange(
-                [
-                    Customer.Create(
-                        id: Guid.Parse("f522bbe5-e3b1-4e2c-a8a3-c41550dcf39d"),
-                        name: "John Doe",
-                        phoneNumber: "123456789",
-                        email: "john.doe@localhost",
-                        vehicles: vehicles).Value,
+            Vehicle.Create(
+                id: Guid.Parse("13c80914-41ad-4d46-b7bb-60f6c89ad01e"),
+                make: "Honda",
+                model: "Civic",
+                year: 2018,
+                licensePlate: "XYZ456").Value
+                    ]).Value;
 
-                Customer.Create(
+                var customer2 = Customer.Create(
                     id: Guid.Parse("73a04dd3-c81a-4a54-9882-ef1017eb192d"),
                     name: "Sarah Peter",
                     phoneNumber: "987654321",
-                    email: "sarah.peter@localhost",
-                    vehicles: [Vehicle.Create(id: Guid.Parse("a04f329d-0f5a-46a0-beae-699c034ae401"), make: "Ford", model: "Focus", year: 2021, licensePlate: "DEF789").Value, Vehicle.Create(id: Guid.Parse("cf60e95b-5752-4c26-aa07-31a34164606c"), make: "Chevrolet", model: "Malibu", year: 2019, licensePlate: "GHI012").Value,]).Value,
-            ]);
+                    email: "sarah.peter@example.com",
+                    vehicles: [
+                        Vehicle.Create(
+                id: Guid.Parse("a04f329d-0f5a-46a0-beae-699c034ae401"),
+                make: "Ford",
+                model: "Focus",
+                year: 2021,
+                licensePlate: "DEF789").Value,
+
+            Vehicle.Create(
+                id: Guid.Parse("cf60e95b-5752-4c26-aa07-31a34164606c"),
+                make: "Chevrolet",
+                model: "Malibu",
+                year: 2019,
+                licensePlate: "GHI012").Value
+                    ]).Value;
+
+                _context.Customers.AddRange(customer1, customer2);
             }
 
 
