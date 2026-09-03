@@ -35,6 +35,15 @@ public class WebAppFactory : WebApplicationFactory<IAssemblyMarker>, IAsyncLifet
         return scope.ServiceProvider.GetRequiredService<IMediator>();
     }
 
+    public async Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
+    {
+        using var scope = Services.CreateScope();
+
+        var sender = scope.ServiceProvider.GetRequiredService<ISender>();
+
+        return await sender.Send(request, cancellationToken);
+    }
+
     public IAppDbContext CreateAppDbContext()
     {
         var scope = Services.CreateScope();

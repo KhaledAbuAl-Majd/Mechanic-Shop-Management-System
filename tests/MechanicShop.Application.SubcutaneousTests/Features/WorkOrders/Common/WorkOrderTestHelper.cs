@@ -35,6 +35,11 @@ public static class WorkOrderTestHelper
 
         var result = await mediator.Send(command, cancellationToken);
 
+        if (!result.IsSuccess)
+        {
+            throw new InvalidOperationException($"CreateValidWorkOrder failed with error: {result.TopError.Code} - {result.TopError.Description}");
+        }
+
         return result.Value;
     }
 
