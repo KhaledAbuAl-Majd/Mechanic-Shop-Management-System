@@ -28,6 +28,20 @@ public class WebAppFactory : WebApplicationFactory<IAssemblyMarker>, IAsyncLifet
 
     private DbConnection _dbConnection = default!;
 
+    /// <summary>
+    /// Create Mediator And AppDbContext in same scope
+    /// </summary>
+    /// <returns>tuble of IMediaor and IAppDbContext</returns>
+    public (IMediator, IAppDbContext, IServiceScope) CreateMediatorAndAppDbContext()
+    {
+        var scope = Services.CreateScope();
+
+        var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+        var context = scope.ServiceProvider.GetRequiredService<IAppDbContext>();
+
+        return (mediator, context, scope);
+    }
+
     public IMediator CreateMediator()
     {
         var scope = Services.CreateScope();
@@ -57,6 +71,14 @@ public class WebAppFactory : WebApplicationFactory<IAssemblyMarker>, IAsyncLifet
     {
         await _dbContainer.StartAsync();
 
+        using (var scope = Services.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            context.WorkOrders.RemoveRange(context.WorkOrders);
+            await context.SaveChangesAsync();
+        }
+
         _dbConnection = new SqlConnection(_dbContainer.GetConnectionString());
         await _dbConnection.OpenAsync();
 
@@ -67,11 +89,6 @@ public class WebAppFactory : WebApplicationFactory<IAssemblyMarker>, IAsyncLifet
             TablesToIgnore = ["__EFMigrationsHistory"]
         });
 
-        using var scope = Services.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-        context.WorkOrders.RemoveRange(context.WorkOrders);
-        await context.SaveChangesAsync();
     }
 
     public new async Task DisposeAsync()

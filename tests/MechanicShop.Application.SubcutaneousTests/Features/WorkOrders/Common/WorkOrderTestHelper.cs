@@ -2,11 +2,14 @@
 using MechanicShop.Application.Features.WorkOrders.Commands.CreateWorkOrder;
 using MechanicShop.Application.Features.WorkOrders.Dtos;
 using MechanicShop.Application.SubcutaneousTests.Common;
+using MechanicShop.Domain.Customers;
+using MechanicShop.Domain.Employees;
 using MechanicShop.Domain.WorkOrders.Enums;
 using MechanicShop.Tests.Common.Customers;
 using MechanicShop.Tests.Common.Employees;
 using MechanicShop.Tests.Common.RepairTasks;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace MechanicShop.Application.SubcutaneousTests.Features.WorkOrders.Common;
 
@@ -17,21 +20,40 @@ public static class WorkOrderTestHelper
         IAppDbContext context,
         CancellationToken cancellationToken = default,
         int hoursOffset = 0,
-        Spot spot = Spot.D)
+        Spot spot = Spot.D,
+        Customer? customer = null,
+        Employee? labor = null)
     {
-        var customer = CustomerFactory.CreateCustomer().Value;
-        var vehicle = customer.Vehicles.First();
-        var labor = EmployeeFactory.CreateLabor().Value;
+        customer ??= CustomerFactory.CreateCustomer().Value;
+        labor ??= EmployeeFactory.CreateLabor().Value;
+
+        if (context.Customers.Entry(customer).State == EntityState.Detached)
+        {
+            context.Customers.Add(customer);
+        }
+
+        if (context.Employees.Entry(labor).State == EntityState.Detached)
+        {
+            context.Employees.Add(labor);
+        }
+
+        foreach (var v in customer.Vehicles)
+        {
+            if (context.Vehicles.Entry(v).State == EntityState.Detached)
+            {
+                context.Vehicles.Add(v);
+            }
+        }
+
+        var vehicle = customer.Vehicles?.First();
         var repairTask = RepairTaskFactory.CreateRepairTask().Value;
 
-        context.Customers.Add(customer);
-        context.Employees.Add(labor);
         context.RepairTasks.Add(repairTask);
         await context.SaveChangesAsync(cancellationToken);
 
         var scheduledAt = GetTomorrowOpening().AddHours(hoursOffset);
 
-        var command = new CreateWorkOrderCommand(spot, vehicle.Id, scheduledAt, [repairTask.Id], labor.Id);
+        var command = new CreateWorkOrderCommand(spot, vehicle!.Id, scheduledAt, [repairTask.Id], labor.Id);
 
         var result = await mediator.Send(command, cancellationToken);
 

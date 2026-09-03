@@ -9,23 +9,34 @@ using MechanicShop.Tests.Common.Customers;
 using MechanicShop.Tests.Common.Employees;
 using MechanicShop.Tests.Common.RepairTasks;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MechanicShop.Application.SubcutaneousTests.Features.WorkOrders.Commands.CreateWorkOrder;
 
 [Collection(WebAppFactoryCollection.CollectionName)]
-public class CreateWorkOrderCommandHandlerTests(WebAppFactory factory) : IAsyncLifetime
+public class CreateWorkOrderCommandHandlerTests : IAsyncLifetime
 {
-    private readonly IMediator _mediator = factory.CreateMediator();
-    private readonly IAppDbContext _context = factory.CreateAppDbContext();
+    private readonly IMediator _mediator = default!;
+    private readonly IAppDbContext _context = default!;
+    private readonly IServiceScope _scope = default!;
 
-    public async Task InitializeAsync()
+    private readonly WebAppFactory _factory;
+
+    public CreateWorkOrderCommandHandlerTests(WebAppFactory factory)
     {
-        await factory.ResetDatabaseAsync();
+        (_mediator, _context, _scope) = factory.CreateMediatorAndAppDbContext();
+        _factory = factory;
     }
 
     public Task DisposeAsync()
     {
+        _scope.Dispose();
         return Task.CompletedTask;
+    }
+
+    public async Task InitializeAsync()
+    {
+        await _factory.ResetDatabaseAsync();
     }
 
     [Fact]

@@ -31,7 +31,7 @@ namespace MechanicShop.Infrastructure.Data
         {
             try
             {
-                await _context.Database.EnsureCreatedAsync();
+                await _context.Database.MigrateAsync();
             }
             catch (Exception ex)
             {

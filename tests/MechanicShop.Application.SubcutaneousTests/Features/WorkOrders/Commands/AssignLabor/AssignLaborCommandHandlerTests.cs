@@ -7,22 +7,34 @@ using MechanicShop.Domain.Common.Results;
 using MechanicShop.Domain.WorkOrders.Enums;
 using MechanicShop.Tests.Common.Employees;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MechanicShop.Application.SubcutaneousTests.Features.WorkOrders.Commands.AssignLabor;
 
 [Collection(WebAppFactoryCollection.CollectionName)]
-public class AssignLaborCommandHandlerTests(WebAppFactory factory) : IAsyncLifetime
+public class AssignLaborCommandHandlerTests : IAsyncLifetime
 {
-    private readonly IMediator _mediator = factory.CreateMediator();
-    private readonly IAppDbContext _context = factory.CreateAppDbContext();
+    private readonly IMediator _mediator = default!;
+    private readonly IAppDbContext _context = default!;
+    private readonly IServiceScope _scope = default!;
+
+    private readonly WebAppFactory _factory;
+
+    public AssignLaborCommandHandlerTests(WebAppFactory factory)
+    {
+        (_mediator, _context, _scope) = factory.CreateMediatorAndAppDbContext();
+        _factory = factory;
+    }
+
+    public Task DisposeAsync()
+    {
+        _scope.Dispose();
+        return Task.CompletedTask;
+    }
 
     public async Task InitializeAsync()
     {
-        await factory.ResetDatabaseAsync();
-    }
-    public Task DisposeAsync()
-    {
-        return Task.CompletedTask;
+        await _factory.ResetDatabaseAsync();
     }
 
 
@@ -66,7 +78,7 @@ public class AssignLaborCommandHandlerTests(WebAppFactory factory) : IAsyncLifet
     public async Task Handle_ShouldFail_WhenLaborNotFound()
     {
         var cancellationToken = CancellationToken.None;
-        var workOrderDto = await WorkOrderTestHelper.CreateValidWorkOrder(_mediator, _context, cancellationToken: cancellationToken);
+        var workOrderDto = await WorkOrderTestHelper.CreateValidWorkOrder(_mediator, _context, cancellationToken: cancellationToken,spot:Spot.C);
 
         var command = new AssignLaborCommand(workOrderDto.WorkOrderId, Guid.NewGuid());
 

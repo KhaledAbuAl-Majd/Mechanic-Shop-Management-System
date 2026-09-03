@@ -8,22 +8,34 @@ using MechanicShop.Domain.WorkOrders;
 using MechanicShop.Domain.WorkOrders.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MechanicShop.Application.SubcutaneousTests.Features.WorkOrders.Commands.DeleteWorkOrder
 {
     [Collection(WebAppFactoryCollection.CollectionName)]
-    public class DeleteWorkOrderCommandHandlerTests(WebAppFactory factory) : IAsyncLifetime
+    public class DeleteWorkOrderCommandHandlerTests : IAsyncLifetime
     {
-        private readonly IMediator _mediator = factory.CreateMediator();
-        private readonly IAppDbContext _context = factory.CreateAppDbContext();
+        private readonly IMediator _mediator = default!;
+        private readonly IAppDbContext _context = default!;
+        private readonly IServiceScope _scope = default!;
+
+        private readonly WebAppFactory _factory;
+
+        public DeleteWorkOrderCommandHandlerTests(WebAppFactory factory)
+        {
+            (_mediator, _context, _scope) = factory.CreateMediatorAndAppDbContext();
+            _factory = factory;
+        }
 
         public Task DisposeAsync()
         {
+            _scope.Dispose();
             return Task.CompletedTask;
         }
+
         public async Task InitializeAsync()
         {
-            await factory.ResetDatabaseAsync();
+            await _factory.ResetDatabaseAsync();
         }
 
         [Fact]
@@ -72,7 +84,7 @@ namespace MechanicShop.Application.SubcutaneousTests.Features.WorkOrders.Command
 
             var command = new DeleteWorkOrderCommand(workOrderDto.WorkOrderId);
 
-            var result = await factory.SendAsync(command, ct);
+            var result = await _factory.SendAsync(command, ct);
 
             Assert.False(result.IsSuccess);
             Assert.Equal(WorkOrderErrors.Readonly.Code, result.TopError.Code);
@@ -83,7 +95,7 @@ namespace MechanicShop.Application.SubcutaneousTests.Features.WorkOrders.Command
         {
             var ct = CancellationToken.None;
 
-            var workOrderDto = await WorkOrderTestHelper.CreateValidWorkOrder(_mediator, _context, ct,hoursOffset:5,spot:Spot.B);
+            var workOrderDto = await WorkOrderTestHelper.CreateValidWorkOrder(_mediator, _context, ct,hoursOffset:7,spot:Spot.D);
 
             var command = new DeleteWorkOrderCommand(workOrderDto.WorkOrderId);
 
