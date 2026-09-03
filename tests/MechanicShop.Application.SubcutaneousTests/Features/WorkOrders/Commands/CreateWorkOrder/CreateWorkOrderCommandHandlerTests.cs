@@ -2,6 +2,7 @@
 using MechanicShop.Application.Common.Interfaces;
 using MechanicShop.Application.Features.WorkOrders.Commands.CreateWorkOrder;
 using MechanicShop.Application.SubcutaneousTests.Common;
+using MechanicShop.Application.SubcutaneousTests.Features.WorkOrders.Common;
 using MechanicShop.Domain.RepairTasks.Enums;
 using MechanicShop.Domain.WorkOrders.Enums;
 using MechanicShop.Tests.Common.Customers;
@@ -43,7 +44,7 @@ public class CreateWorkOrderCommandHandlerTests(WebAppFactory factory) : IAsyncL
         _context.RepairTasks.Add(repairTask);
         await _context.SaveChangesAsync(cancellationToken);
 
-        var scheduledAt = GetTommoryOpening().AddHours(6);
+        var scheduledAt = WorkOrderTestHelper.GetTomorrowOpening().AddHours(6);
 
         var spot = Spot.D;
         var command = new CreateWorkOrderCommand(spot, vehicle.Id, scheduledAt, [repairTask.Id], labor.Id);
@@ -75,7 +76,7 @@ public class CreateWorkOrderCommandHandlerTests(WebAppFactory factory) : IAsyncL
         await _context.SaveChangesAsync(cancellationToken);
 
         var fakeRepairTaskId = Guid.NewGuid();
-        var scheduledAt = GetTommoryOpening();
+        var scheduledAt = WorkOrderTestHelper.GetTomorrowOpening();
 
         var command = new CreateWorkOrderCommand(Spot.A, vehicle.Id, scheduledAt, [fakeRepairTaskId], labor.Id);
 
@@ -127,7 +128,7 @@ public class CreateWorkOrderCommandHandlerTests(WebAppFactory factory) : IAsyncL
         _context.RepairTasks.Add(repairTask);
         await _context.SaveChangesAsync(cancellationToken);
 
-        var scheduledAt = GetTommoryOpening().AddHours(1);
+        var scheduledAt = WorkOrderTestHelper.GetTomorrowOpening().AddHours(1);
 
         var command = new CreateWorkOrderCommand(Spot.A, vehicle.Id, scheduledAt, [repairTask.Id], labor.Id);
 
@@ -161,7 +162,7 @@ public class CreateWorkOrderCommandHandlerTests(WebAppFactory factory) : IAsyncL
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        var scheduledAt = GetTommoryOpening().AddHours(2);
+        var scheduledAt = WorkOrderTestHelper.GetTomorrowOpening().AddHours(2);
 
         var command1 = new CreateWorkOrderCommand(Spot.A, vehicle1.Id, scheduledAt, [repairTask.Id], labor1.Id);
         var command2 = new CreateWorkOrderCommand(Spot.A, vehicle2.Id, scheduledAt, [repairTask.Id], labor2.Id);
@@ -188,7 +189,7 @@ public class CreateWorkOrderCommandHandlerTests(WebAppFactory factory) : IAsyncL
 
         var fakeVehilceId = Guid.NewGuid();
 
-        var scheduledAt = GetTommoryOpening().AddHours(4);
+        var scheduledAt = WorkOrderTestHelper.GetTomorrowOpening().AddHours(4);
 
         var command = new CreateWorkOrderCommand(Spot.A, fakeVehilceId, scheduledAt, [repairTask.Id], labor.Id);
 
@@ -214,7 +215,7 @@ public class CreateWorkOrderCommandHandlerTests(WebAppFactory factory) : IAsyncL
 
         var fakeLaborId = Guid.NewGuid();
 
-        var scheduledAt = GetTommoryOpening().AddHours(1);
+        var scheduledAt = WorkOrderTestHelper.GetTomorrowOpening().AddHours(1);
 
         var command = new CreateWorkOrderCommand(Spot.C, vehicle.Id, scheduledAt, [repairTask.Id], fakeLaborId);
 
@@ -243,7 +244,7 @@ public class CreateWorkOrderCommandHandlerTests(WebAppFactory factory) : IAsyncL
         _context.RepairTasks.Add(repairTask);
         await _context.SaveChangesAsync(cancellationToken);
 
-        var scheduledAt = GetTommoryOpening().AddHours(4);
+        var scheduledAt = WorkOrderTestHelper.GetTomorrowOpening().AddHours(4);
 
         var command1 = new CreateWorkOrderCommand(Spot.C, vehicle.Id, scheduledAt, [repairTask.Id], labor1.Id);
         var command2 = new CreateWorkOrderCommand(Spot.D, vehicle.Id, scheduledAt, [repairTask.Id], labor2.Id);
@@ -274,7 +275,7 @@ public class CreateWorkOrderCommandHandlerTests(WebAppFactory factory) : IAsyncL
         _context.RepairTasks.Add(repairTask);
         await _context.SaveChangesAsync(cancellationToken);
 
-        var scheduledAt = GetTommoryOpening().AddHours(5);
+        var scheduledAt = WorkOrderTestHelper.GetTomorrowOpening().AddHours(5);
 
         var command1 = new CreateWorkOrderCommand(Spot.A, vehicle1.Id, scheduledAt, [repairTask.Id], labor.Id);
         var command2 = new CreateWorkOrderCommand(Spot.B, vehicle2.Id, scheduledAt, [repairTask.Id], labor.Id);
@@ -285,23 +286,9 @@ public class CreateWorkOrderCommandHandlerTests(WebAppFactory factory) : IAsyncL
         Assert.False(result.IsSuccess);
     }
 
-
-    public static DateTimeOffset GetTommoryOpening()
-    {
-        var tomorrow = GetTomorrow();
-
-        return new DateTimeOffset(
-        tomorrow.ToDateTime(AppSettingsTestData.DefaultOpeningTime),
-        TimeSpan.Zero);
-    }
-
     public static TheoryData<DateTimeOffset> GetInvalidStartAt => new TheoryData<DateTimeOffset>()
     {
-        new DateTimeOffset(GetTomorrow().ToDateTime(AppSettingsTestData.DefaultOpeningTime.AddHours(-1)),TimeSpan.Zero),
-        new DateTimeOffset(GetTomorrow().ToDateTime(AppSettingsTestData.DefaultClosingTime.AddHours(1)),TimeSpan.Zero),
+        new DateTimeOffset(WorkOrderTestHelper.GetTomorrow().ToDateTime(AppSettingsTestData.DefaultOpeningTime.AddHours(-1)),TimeSpan.Zero),
+        new DateTimeOffset(WorkOrderTestHelper.GetTomorrow().ToDateTime(AppSettingsTestData.DefaultClosingTime.AddHours(1)),TimeSpan.Zero),
     };
-
-    public static DateOnly GetTomorrow() => DateOnly.FromDateTime(DateTime.UtcNow).AddDays(1);
-
-
 }
