@@ -22,8 +22,8 @@ public class AssignLaborCommandHandlerTests : IAsyncLifetime
 
     public AssignLaborCommandHandlerTests(WebAppFactory factory)
     {
-        (_mediator, _context, _scope) = factory.CreateMediatorAndAppDbContext();
         _factory = factory;
+        (_mediator, _context, _scope) = factory.CreateMediatorAndAppDbContext();
     }
 
     public Task DisposeAsync()

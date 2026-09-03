@@ -1,5 +1,6 @@
 ﻿using MechanicShop.Application.Common.Errors;
 using MechanicShop.Application.Common.Interfaces;
+using MechanicShop.Application.Features.WorkOrders.Dtos;
 using MechanicShop.Application.Features.WorkOrders.Interfaces;
 using MechanicShop.Domain.Common.Results;
 using MechanicShop.Domain.RepairTasks;
@@ -66,7 +67,7 @@ namespace MechanicShop.Application.Features.WorkOrders.Commands.UpdateWorkOrderR
 
             if (_workOrderValidator.IsOutsideOperatingHours(workOrder.StartAtUtc, totalDuration))
             {
-                return Error.Conflict("WorkOrder.Outside.OperatingHours", "WorkOrder timing exceeds business hours.");
+                return ApplicationErrors.WorkOrderOutsideOperatingHour(workOrder.StartAtUtc, newEndAt);
             }
 
             var spotCheckResult = await _workOrderValidator.CheckSpotAvailabilityAsync(

@@ -24,8 +24,8 @@ public class RelocateWorkOrderCommandHandlerTests : IAsyncLifetime
 
     public RelocateWorkOrderCommandHandlerTests(WebAppFactory factory)
     {
-        (_mediator, _context, _scope) = factory.CreateMediatorAndAppDbContext();
         _factory = factory;
+        (_mediator, _context, _scope) = factory.CreateMediatorAndAppDbContext();
     }
 
     public Task DisposeAsync()
