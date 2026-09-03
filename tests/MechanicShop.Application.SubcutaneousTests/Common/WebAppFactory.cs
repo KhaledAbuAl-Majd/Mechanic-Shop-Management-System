@@ -4,6 +4,7 @@ using MechanicShop.Application.Common.Interfaces;
 using MechanicShop.Application.Common.Settings;
 using MechanicShop.Infrastructure.BackgroundJobs;
 using MechanicShop.Infrastructure.Data;
+using MechanicShop.Tests.Common;
 using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -27,6 +28,8 @@ public class WebAppFactory : WebApplicationFactory<IAssemblyMarker>, IAsyncLifet
     private Respawner _respawner = default!;
 
     private DbConnection _dbConnection = default!;
+
+    public FakeTimeProvider FakeTimeProvider = new(DateTimeOffset.UtcNow);
 
     /// <summary>
     /// Create Mediator And AppDbContext in same scope
@@ -101,6 +104,7 @@ public class WebAppFactory : WebApplicationFactory<IAssemblyMarker>, IAsyncLifet
     public async Task ResetDatabaseAsync()
     {
         await _respawner.ResetAsync(_dbConnection);
+        FakeTimeProvider.SetUtcNow(DateTimeOffset.UtcNow);
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -118,6 +122,7 @@ public class WebAppFactory : WebApplicationFactory<IAssemblyMarker>, IAsyncLifet
             });
 
             services.RemoveAll<AppSettings>();
+            services.RemoveAll<TimeProvider>();
 
             services.PostConfigure<AppSettings>(options =>
             {
@@ -127,6 +132,7 @@ public class WebAppFactory : WebApplicationFactory<IAssemblyMarker>, IAsyncLifet
             });
 
             services.AddSingleton(sp => sp.GetRequiredService<IOptions<AppSettings>>().Value);
+            services.AddSingleton<TimeProvider>(FakeTimeProvider);
         });
     }
 }

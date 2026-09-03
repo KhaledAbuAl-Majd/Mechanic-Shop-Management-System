@@ -22,7 +22,8 @@ public static class WorkOrderTestHelper
         int hoursOffset = 0,
         Spot spot = Spot.D,
         Customer? customer = null,
-        Employee? labor = null)
+        Employee? labor = null,
+        DateTimeOffset? startAt = null)
     {
         customer ??= CustomerFactory.CreateCustomer().Value;
         labor ??= EmployeeFactory.CreateLabor().Value;
@@ -51,7 +52,8 @@ public static class WorkOrderTestHelper
         context.RepairTasks.Add(repairTask);
         await context.SaveChangesAsync(cancellationToken);
 
-        var scheduledAt = GetTomorrowOpening().AddHours(hoursOffset);
+        var scheduledAt = startAt ?? GetTomorrowOpening();
+        scheduledAt = scheduledAt.AddHours(hoursOffset);
 
         var command = new CreateWorkOrderCommand(spot, vehicle!.Id, scheduledAt, [repairTask.Id], labor.Id);
 

@@ -4,6 +4,16 @@
     {
         private DateTimeOffset _utcNow;
 
+        public FakeTimeProvider(DateTimeOffset utcNow)
+        {
+            _utcNow = utcNow;
+        }
+
+        public FakeTimeProvider()
+        {
+
+        }
+
         public void SetUtcNow(DateTimeOffset utcNow)
         {
             _utcNow = utcNow;
