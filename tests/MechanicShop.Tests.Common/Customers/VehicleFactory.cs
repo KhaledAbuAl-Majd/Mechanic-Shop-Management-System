@@ -14,7 +14,7 @@ public static class VehicleFactory
         string? licensePlate = DefaultPlateSentinel)
     {
         var finalPlate = licensePlate == DefaultPlateSentinel
-         ? Guid.NewGuid().ToString("N")[..15]
+         ? Guid.NewGuid().ToString("N")[..10]
          : licensePlate;
 
         return Vehicle.Create(

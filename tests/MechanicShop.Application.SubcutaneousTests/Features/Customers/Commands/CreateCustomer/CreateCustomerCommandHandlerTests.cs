@@ -48,7 +48,7 @@ public class CreateCustomerCommandHandlerTests : IAsyncLifetime
         var result = await _mediator.Send(command, ct);
 
         Assert.False(result.IsSuccess);
-        Assert.Equal(CustomerErrors.CustomerExists.Code, result.TopError.Code);
+        Assert.Equal(CustomerErrors.CustomerEmailExists.Code, result.TopError.Code);
     }
 
 

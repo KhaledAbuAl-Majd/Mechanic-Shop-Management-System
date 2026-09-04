@@ -28,7 +28,7 @@ namespace MechanicShop.Application.Features.Customers.Commands.CreateCustomer
             {
                 _logger.LogWarning("Customer creating aborted. Email already exists.");
 
-                return CustomerErrors.CustomerExists;
+                return CustomerErrors.CustomerEmailExists;
             }
 
             List<Vehicle> vehicles = [];

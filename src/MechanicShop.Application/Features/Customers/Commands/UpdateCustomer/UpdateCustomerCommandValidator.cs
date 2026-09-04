@@ -12,7 +12,7 @@ namespace MechanicShop.Application.Features.Customers.Commands.UpdateCustomer
                 .WithMessage("Name is required")
                 .MaximumLength(100);
 
-            RuleFor(x => x.Email).EmailAddress()
+            RuleFor(x => x.Email).NotEmpty().EmailAddress()
                 .WithMessage("Invalid email")
                 .MaximumLength(100);
 

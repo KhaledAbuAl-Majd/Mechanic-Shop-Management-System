@@ -1,6 +1,7 @@
 ﻿using MechanicShop.Application.Common.Errors;
 using MechanicShop.Application.Common.Interfaces;
 using MechanicShop.Domain.Common.Results;
+using MechanicShop.Domain.Customers;
 using MechanicShop.Domain.Customers.Vehicles;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,21 @@ namespace MechanicShop.Application.Features.Customers.Commands.UpdateCustomer
 
                 return ApplicationErrors.CustomerNotFound;
             }
+
+            var email = command.Email.Trim().ToLower();
+
+            if (!customer.Email!.Equals(email, StringComparison.OrdinalIgnoreCase))
+            {
+                var exists = await _context.Customers.AnyAsync(c => c.Id != customer.Id && c.Email!.ToLower() == email, ct);
+
+                if (exists)
+                {
+                    _logger.LogWarning("Customer updating aborted. Email already exists.");
+
+                    return CustomerErrors.CustomerEmailExists;
+                }
+            }
+
 
             var validatedVehicles = new List<Vehicle>();
 

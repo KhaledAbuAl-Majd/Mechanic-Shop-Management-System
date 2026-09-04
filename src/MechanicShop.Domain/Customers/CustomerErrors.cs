@@ -19,7 +19,7 @@ namespace MechanicShop.Domain.Customers
         public static Error EmailInvalid =>
             Error.Validation("Customer.Email.Invalid", "Email is invalid");
 
-        public static Error CustomerExists =>
+        public static Error CustomerEmailExists =>
        Error.Conflict("Customer.Email.Exists", "A customer with this email already exists.");
 
         public static readonly Error InvalidPhoneNumber =
