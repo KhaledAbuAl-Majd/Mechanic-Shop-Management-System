@@ -22,7 +22,7 @@ namespace MechanicShop.Application.Features.RepairTasks.Commands.CreateRepairTas
 
             RuleFor(x => x.Parts)
                 .NotNull().WithMessage("Parts list cannot be null.")
-                .Must(p => p.Count > 0).WithMessage("At least one part is required.");
+                .Must(p => p?.Count > 0).WithMessage("At least one part is required.");
 
             RuleForEach(x => x.Parts).SetValidator(new CreateRepairTaskPartCommandValidator());
         }
