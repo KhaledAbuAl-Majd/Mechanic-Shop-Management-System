@@ -90,7 +90,16 @@ public class WebAppFactory : WebApplicationFactory<IAssemblyMarker>, IAsyncLifet
         {
             DbAdapter = DbAdapter.SqlServer,
             SchemasToInclude = ["dbo"],
-            TablesToIgnore = ["__EFMigrationsHistory"]
+            TablesToIgnore =
+            [
+                "__EFMigrationsHistory",
+                "AspNetUsers",
+                "AspNetRoles",
+                "AspNetRoleClaims",
+                "AspNetUserClaims",
+                "AspNetUserLogins",
+                "AspNetUserRoles",
+                "AspNetUserTokens"]
         });
 
     }
