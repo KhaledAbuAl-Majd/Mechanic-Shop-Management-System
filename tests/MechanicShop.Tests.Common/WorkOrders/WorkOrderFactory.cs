@@ -17,11 +17,12 @@ public static class WorkOrderFactory
         Spot? spot = null,
         List<RepairTask>? repairTasks = null, bool setListIfNull = true)
     {
+         startAt ??= DateTimeOffset.UtcNow;
         return WorkOrder.Create(
             id ?? Guid.NewGuid(),
             vehicleId ?? Guid.NewGuid(),
-            startAt ?? DateTimeOffset.UtcNow,
-            endAt ?? DateTimeOffset.UtcNow.AddHours(1),
+            startAt:startAt.Value,
+            endAt ?? startAt.Value.AddHours(1),
             laborId ?? Guid.NewGuid(),
             spot ?? Spot.B,
            setListIfNull ? repairTasks ?? [RepairTaskFactory.CreateRepairTask().Value] : repairTasks!);

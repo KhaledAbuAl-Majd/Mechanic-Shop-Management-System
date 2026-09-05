@@ -84,4 +84,14 @@ public static class WorkOrderTestHelper
     }
 
     public static DateOnly GetTomorrow() => DateOnly.FromDateTime(DateTime.UtcNow).AddDays(1);
+
+    public static DateTimeOffset GetTomorrowOpening(DateTime today)
+    {
+        var tomorrow = GetTomorrow(today);
+
+        return new DateTimeOffset(
+        tomorrow.ToDateTime(AppSettingsTestData.DefaultOpeningTime),
+        TimeSpan.Zero);
+    }
+    public static DateOnly GetTomorrow(DateTime today) => DateOnly.FromDateTime(today).AddDays(1);
 }
