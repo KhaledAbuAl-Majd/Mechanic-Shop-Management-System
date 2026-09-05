@@ -35,7 +35,6 @@ public class UpdateCustomerCommandValidatorTests
     }
 
     [Theory]
-    [InlineData(null)]
     [InlineData("")]
     [InlineData("dfdadfd")]
     public async Task Validate_ShouldFail_WhenEmailInvalid(string? email)

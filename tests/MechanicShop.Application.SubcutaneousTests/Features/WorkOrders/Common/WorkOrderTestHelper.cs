@@ -25,7 +25,8 @@ public static class WorkOrderTestHelper
         Employee? labor = null,
         DateTimeOffset? startAt = null)
     {
-        customer ??= CustomerFactory.CreateCustomer().Value;
+
+        customer ??= CustomerFactory.CreateCustomer(email: $"{Guid.NewGuid().ToString()[..10]}@gmail.com").Value;
         labor ??= EmployeeFactory.CreateLabor().Value;
 
         if (context.Customers.Entry(customer).State == EntityState.Detached)
