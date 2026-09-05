@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -109,6 +110,14 @@ public class WebAppFactory : WebApplicationFactory<IAssemblyMarker>, IAsyncLifet
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.ConfigureAppConfiguration((context, config) =>
+        {
+            config.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["ConnectionStrings:Redis"] = null
+            });
+        });
+
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<IHostedService>();
@@ -131,8 +140,10 @@ public class WebAppFactory : WebApplicationFactory<IAssemblyMarker>, IAsyncLifet
                 options.MinimumAppointmentDurationInMinutes = AppSettingsTestData.MinimumAppointmentDurationInMinutes;
             });
 
+
             services.AddSingleton(sp => sp.GetRequiredService<IOptions<AppSettings>>().Value);
             services.AddSingleton<TimeProvider>(FakeTimeProvider);
         });
+
     }
 }
