@@ -1,4 +1,5 @@
-﻿using MechanicShop.Application.Common.Interfaces;
+﻿using MechanicShop.Application.Common.Errors;
+using MechanicShop.Application.Common.Interfaces;
 using MechanicShop.Application.Features.Customers.Dtos;
 using MechanicShop.Application.Features.Customers.Mappers;
 using MechanicShop.Domain.Common.Results;
@@ -22,8 +23,9 @@ namespace MechanicShop.Application.Features.Customers.Queries.GetCustomerById
             {
                 _logger.LogWarning("Customer with id {CustomerId} was not found", query.CustomerId);
 
+                var code = ApplicationErrors.CustomerNotFound.Code;
                 return Error.NotFound(
-               code: "Customer.NotFound",
+               code: code,
                description: $"Customer with id '{query.CustomerId}' was not found");
 
                 //return ApplicationErrors.CustomerNotFound;
