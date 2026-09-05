@@ -4,6 +4,7 @@ using MechanicShop.Application.Features.WorkOrders.Dtos;
 using MechanicShop.Application.SubcutaneousTests.Common;
 using MechanicShop.Domain.Customers;
 using MechanicShop.Domain.Employees;
+using MechanicShop.Domain.RepairTasks;
 using MechanicShop.Domain.WorkOrders.Enums;
 using MechanicShop.Tests.Common.Customers;
 using MechanicShop.Tests.Common.Employees;
@@ -23,11 +24,13 @@ public static class WorkOrderTestHelper
         Spot spot = Spot.D,
         Customer? customer = null,
         Employee? labor = null,
-        DateTimeOffset? startAt = null)
+        DateTimeOffset? startAt = null,
+        RepairTask? repairTask = null)
     {
 
         customer ??= CustomerFactory.CreateCustomer(email: $"{Guid.NewGuid().ToString()[..10]}@gmail.com").Value;
         labor ??= EmployeeFactory.CreateLabor().Value;
+        repairTask ??= RepairTaskFactory.CreateRepairTask().Value;
 
         if (context.Customers.Entry(customer).State == EntityState.Detached)
         {
@@ -39,6 +42,11 @@ public static class WorkOrderTestHelper
             context.Employees.Add(labor);
         }
 
+        if (context.RepairTasks.Entry(repairTask).State == EntityState.Detached)
+        {
+            context.RepairTasks.Add(repairTask);
+        }
+
         foreach (var v in customer.Vehicles)
         {
             if (context.Vehicles.Entry(v).State == EntityState.Detached)
@@ -48,9 +56,7 @@ public static class WorkOrderTestHelper
         }
 
         var vehicle = customer.Vehicles?.First();
-        var repairTask = RepairTaskFactory.CreateRepairTask().Value;
 
-        context.RepairTasks.Add(repairTask);
         await context.SaveChangesAsync(cancellationToken);
 
         var scheduledAt = startAt ?? GetTomorrowOpening();
