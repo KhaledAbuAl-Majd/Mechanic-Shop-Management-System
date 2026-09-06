@@ -1,4 +1,5 @@
-﻿using MechanicShop.Application.Common.Extensions;
+﻿using MechanicShop.Application.Common.Errors;
+using MechanicShop.Application.Common.Extensions;
 using MechanicShop.Application.Common.Interfaces;
 using MechanicShop.Application.Features.Identity.Dtos;
 using MechanicShop.Domain.Common.Results;
@@ -62,7 +63,7 @@ namespace MechanicShop.Infrastructure.Identity
             var user = await _userManager.FindByIdAsync(userId);
 
             if (user is null)
-                return Error.NotFound("User.NotFound", $"User with id {userId} not found.");
+                return Error.NotFound(ApplicationErrors.UserNotFound.Code, $"User with id {userId} not found.");
 
             var roles = await _userManager.GetRolesAsync(user);
             var claims = await _userManager.GetClaimsAsync(user);
