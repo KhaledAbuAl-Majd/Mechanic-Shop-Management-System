@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using MechanicShop.Application.Features.Identity.Commands.GenerateToken;
+﻿using MechanicShop.Application.Features.Identity.Commands.GenerateToken;
 
 namespace MechanicShop.Application.SubcutaneousTests.Features.Identity.Commands.GenerateToken
 {

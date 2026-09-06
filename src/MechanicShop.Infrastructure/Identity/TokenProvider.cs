@@ -62,9 +62,9 @@ namespace MechanicShop.Infrastructure.Identity
                 //return Error.Validation("AccessToken.invalid", "Access token is invalid");
             }
 
-            if(jwtSecurityToken.ValidTo > _datetime.GetUtcNow())
+            if (jwtSecurityToken.ValidTo > _datetime.GetUtcNow())
             {
-                return Error.Validation("AccessToken.NotExpired", "Access token not expired yet.");
+                return ApplicationErrors.AccessTokenNotExpired;
             }
 
             return principal;
