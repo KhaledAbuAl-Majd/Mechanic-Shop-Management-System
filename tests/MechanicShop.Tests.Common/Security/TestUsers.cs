@@ -1,4 +1,5 @@
-﻿using MechanicShop.Infrastructure.Identity;
+﻿using MechanicShop.Domain.Identity.Enums;
+using MechanicShop.Infrastructure.Identity;
 
 namespace MechanicShop.Tests.Common.Security;
 
@@ -42,5 +43,14 @@ public static class TestUsers
         Email = "suzan.labor@localhost",
         UserName = "suzan.labor@localhost",
         EmailConfirmed = true
+    };
+
+    public static List<(Role Role, AppUser User)> UsersList => new List<(Role, AppUser)>
+    {
+        (Role.Manager,Manager),
+        (Role.Labor,Labor01),
+        (Role.Labor,Labor02),
+        (Role.Labor,Labor03),
+        (Role.Labor,Labor04)
     };
 }
