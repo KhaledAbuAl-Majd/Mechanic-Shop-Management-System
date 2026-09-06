@@ -12,11 +12,17 @@ namespace MechanicShop.Application.Features.RepairTasks.Commands.CreateRepairTas
                .WithMessage(PartErrors.NameRequired.Description)
                .MaximumLength(100);
 
-            RuleFor(x => x.Cost).GreaterThan(PartConstant.ExclusiveMinCost).LessThanOrEqualTo(PartConstant.MaxCost)
+            RuleFor(x => x.Cost)
+                .GreaterThan(PartConstant.ExclusiveMinCost)
                 .WithErrorCode(PartErrors.CostInvalid.Code)
                 .WithMessage(PartErrors.CostInvalid.Description);
 
-            RuleFor(x => x.Quantity).ExclusiveBetween(PartConstant.MinQuantity, PartConstant.MaxQuantity)
+            RuleFor(x => x.Cost)
+                .LessThanOrEqualTo(PartConstant.MaxCost)
+                .WithErrorCode(PartErrors.CostInvalid.Code)
+                .WithMessage(PartErrors.CostInvalid.Description);
+
+            RuleFor(x => x.Quantity).InclusiveBetween(PartConstant.MinQuantity, PartConstant.MaxQuantity)
                 .WithErrorCode(PartErrors.QuantityInvalid.Code)
                 .WithMessage(PartErrors.QuantityInvalid.Description);
         }

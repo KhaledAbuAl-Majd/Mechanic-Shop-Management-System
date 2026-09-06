@@ -35,7 +35,8 @@ namespace MechanicShop.Application.Common.Behaviours
             _logger.LogWarning("Validation failed for {RequestName} with {ErrorCount} errors",
             typeof(TRequest).Name, failures.Count);
 
-            var errors = failures.ConvertAll(error => Error.Validation(code: error.PropertyName, description: error.ErrorMessage));
+            var errors = failures.ConvertAll(error => Error.Validation(code: !string.IsNullOrWhiteSpace(error.ErrorCode) ? error.ErrorCode : error.PropertyName,
+                description: error.ErrorMessage));
 
             return (dynamic)errors;
         }

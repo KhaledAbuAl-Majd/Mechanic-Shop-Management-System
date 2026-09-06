@@ -76,7 +76,7 @@ namespace MechanicShop.Application.Features.Identity.Commands.RefreshToken
             {
                 _logger.LogWarning("Refresh token is invalid or expired for user {UserId}", userId);
 
-                return ApplicationErrors.RefreshTokenExpired;
+                return ApplicationErrors.RefreshTokenInvalidOrExpired;
             }
 
             var generateTokenResult = await _tokenProvider.GenerateJwtTokenAsync(getUserResult.Value, ct);

@@ -21,6 +21,8 @@ namespace MechanicShop.Infrastructure.Data.Configurations
             builder.Property(c => c.Email).IsRequired(false).HasMaxLength(150);
 
             builder.Navigation(c => c.Vehicles).UsePropertyAccessMode(PropertyAccessMode.Field);
+
+            builder.HasIndex(c => c.Email).HasFilter("[Email] IS NOT NULL").IsUnique();
         }
     }
 }

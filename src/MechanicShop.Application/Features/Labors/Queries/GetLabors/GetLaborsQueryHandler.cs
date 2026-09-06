@@ -14,7 +14,14 @@ namespace MechanicShop.Application.Features.Labors.Queries.GetLabors
 
         public async Task<Result<List<LaborDto>>> Handle(GetLaborsQuery query, CancellationToken ct)
         {
-            return await _context.Employees.AsNoTracking().Where(e => e.Role == Role.Labor).Select(c => c.ToDto()).ToListAsync(ct);
+            // Materialize entities first then map to DTOs to avoid any EF translation issues for the mapper
+            var employees = await _context.Employees.AsNoTracking()
+                .Where(e => e.Role == Role.Labor)
+                .ToListAsync(ct);
+
+            var dtos = employees.Select(e => e.ToDto()).ToList();
+
+            return dtos;
         }
     }
 }
