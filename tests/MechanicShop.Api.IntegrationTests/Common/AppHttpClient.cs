@@ -75,8 +75,21 @@ public class AppHttpClient : IDisposable
         return await _httpClient.GetAsync(requestUri, ct);
     }
 
-    public async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct = default)
+    public async Task<HttpResponseMessage> SendAsync(
+        HttpRequestMessage request,
+        string? idempotenceValue = null,
+        bool attachIdempotencyKey = false,
+        CancellationToken ct = default)
     {
+        var shouldAttach = attachIdempotencyKey || !string.IsNullOrWhiteSpace(idempotenceValue);
+
+        if (shouldAttach)
+        {
+            var keyValue = string.IsNullOrWhiteSpace(idempotenceValue) ? Guid.NewGuid().ToString() : idempotenceValue;
+
+            request.Headers.Add("X-Idempotency-Key", keyValue);
+        }
+
         return await _httpClient.SendAsync(request, ct);
     }
 
@@ -92,19 +105,28 @@ public class AppHttpClient : IDisposable
             Content = JsonContent.Create(value)
         };
 
-        if (attachIdempotencyKey)
-        {
-            var keyValue = string.IsNullOrWhiteSpace(idempotenceValue) ? Guid.NewGuid().ToString() : idempotenceValue;
+        return await SendAsync(request, idempotenceValue, attachIdempotencyKey, ct);
+    }
 
-            request.Headers.Add("X-Idempotency-Key", keyValue);
-        }
+    public async Task<HttpResponseMessage> PostAsync(
+    string requestUri,
+    string? idempotenceValue = null,
+    bool attachIdempotencyKey = false,
+    CancellationToken ct = default)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
 
-        return await _httpClient.SendAsync(request, ct);
+        return await SendAsync(request, idempotenceValue, attachIdempotencyKey, ct);
     }
 
     public async Task<HttpResponseMessage> PutAsJsonAsync<T>(string requestUri, T value, CancellationToken ct = default)
     {
         return await _httpClient.PutAsJsonAsync<T>(requestUri, value, ct);
+    }
+
+    public async Task<HttpResponseMessage> PutAsync(string requestUri, CancellationToken ct = default)
+    {
+        return await _httpClient.PutAsync(requestUri, content: null, ct);
     }
 
     public async Task<HttpResponseMessage> DeleteAsync(string requestUri, CancellationToken ct = default)

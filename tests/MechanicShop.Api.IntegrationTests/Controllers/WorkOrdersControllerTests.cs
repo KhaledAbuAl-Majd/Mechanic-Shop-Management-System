@@ -9,7 +9,6 @@ using MechanicShop.Application.Features.Scheduling.Dtos;
 using MechanicShop.Application.Features.WorkOrders.Dtos;
 using MechanicShop.Domain.WorkOrders.Enums;
 using MechanicShop.Tests.Common.Security;
-using Microsoft.EntityFrameworkCore;
 
 namespace MechanicShop.Api.IntegrationTests.Controllers;
 
@@ -848,7 +847,7 @@ public class WorkOrdersControllerTests : IAsyncLifetime
         var tz = _factory.FakeTimeProvider.LocalTimeZone;
         request.Headers.Add("X-TimeZone", tz.Id);
 
-        var response = await _client.SendAsync(request, ct);
+        var response = await _client.SendAsync(request, ct: ct);
 
         var resultString = response.Content.ReadAsStringAsync(ct);
 
@@ -892,7 +891,7 @@ public class WorkOrdersControllerTests : IAsyncLifetime
         var tz = _factory.FakeTimeProvider.LocalTimeZone;
         request.Headers.Add("X-TimeZone", tz.Id);
 
-        var response = await _client.SendAsync(request, ct);
+        var response = await _client.SendAsync(request, ct: ct);
 
         var resultString = response.Content.ReadAsStringAsync(ct);
 
@@ -919,7 +918,7 @@ public class WorkOrdersControllerTests : IAsyncLifetime
         var tz = _factory.FakeTimeProvider.LocalTimeZone;
         request.Headers.Add("X-TimeZone", tz.Id);
 
-        var response = await _client.SendAsync(request, ct);
+        var response = await _client.SendAsync(request, ct: ct);
 
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);

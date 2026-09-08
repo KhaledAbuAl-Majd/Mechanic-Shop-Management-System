@@ -1,8 +1,13 @@
-﻿using MechanicShop.Application.Common.Interfaces;
+﻿using Docker.DotNet.Models;
+using MechanicShop.Application.Common.Interfaces;
 using MechanicShop.Domain.Customers;
 using MechanicShop.Domain.RepairTasks;
+using MechanicShop.Domain.WorkOrders;
+using MechanicShop.Domain.WorkOrders.Billing;
+using MechanicShop.Domain.WorkOrders.Enums;
 using MechanicShop.Tests.Common.Customers;
 using MechanicShop.Tests.Common.RepairTasks;
+using MechanicShop.Tests.Common.WorkOrders.Billing;
 
 namespace MechanicShop.Api.IntegrationTests.Common;
 
@@ -34,5 +39,53 @@ public static class DatabaseTestExtensions
         await context.SaveChangesAsync(ct);
 
         return repairTask;
+    }
+
+    public static async Task<WorkOrder> SeedWorkOrderAsync(this IAppDbContext context,
+        int hoursOffset = 0,
+        Spot spot = Spot.C,
+        TimeProvider? provider = null,
+        WorkOrderState state = WorkOrderState.InProgress,
+        CancellationToken ct = default)
+    {
+        provider ??= TimeProvider.System;
+
+        var customer = await SeedCustomerAsync(context, ct);
+        var repairTask = await SeedRepairTaskAsync(context, ct);
+
+        var workOrder = WorkOrderTestDataBuilder.Create(provider)
+            .UpdateDate(hoursOffset)
+            .AtSpot(spot)
+            .WithRepairTasks(repairTask)
+            .WithVehicle(customer.Vehicles.First().Id)
+            .WithState(state)
+            .Build();
+
+        context.WorkOrders.Add(workOrder);
+
+        await context.SaveChangesAsync(ct);
+
+        return workOrder;
+    }
+
+
+    public static async Task<Invoice> SeedInvoiceAsync(
+        this IAppDbContext context,
+        TimeProvider? provider = null,
+        CancellationToken ct = default)
+    {
+        provider ??= TimeProvider.System;
+
+        var workOrder = await SeedWorkOrderAsync(context, provider: provider,state:WorkOrderState.Completed, ct: ct);
+
+        var invoice = InvoiceFactory.CreateInvoice(
+            workOrderId: workOrder.Id,
+            datetime: provider).Value;
+
+        context.Invoices.Add(invoice);
+
+        await context.SaveChangesAsync(ct);
+
+        return invoice;
     }
 }
