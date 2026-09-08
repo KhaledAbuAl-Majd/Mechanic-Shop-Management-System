@@ -47,11 +47,15 @@ namespace MechanicShop.Application.Common.Errors
              code: "Auth.ExpiredAccessToken.Invalid",
              description: "Expired access token is not valid.");
 
+
+        public static readonly Error AccessTokenNotExpired =
+            Error.Validation("AccessToken.NotExpired", "Access token not expired yet.");
+
         public static readonly Error UserIdClaimInvalid = Error.Validation(
             code: "Auth.UserIdClaim.Invalid",
             description: "Invalid userId claim.");
 
-        public static readonly Error RefreshTokenExpired = Error.Validation(
+        public static readonly Error RefreshTokenInvalidOrExpired = Error.Validation(
             code: "Auth.RefreshToken.Expired",
             description: "Refresh token is invalid or has expired.");
 

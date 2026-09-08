@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using MechanicShop.Domain.RepairTasks;
 using MechanicShop.Domain.WorkOrders;
 
 namespace MechanicShop.Application.Features.WorkOrders.Commands.UpdateWorkOrderRepairTasks
@@ -12,8 +13,8 @@ namespace MechanicShop.Application.Features.WorkOrders.Commands.UpdateWorkOrderR
             .WithMessage(WorkOrderErrors.WorkOrderIdRequired.Description);
 
             RuleFor(x => x.RepairTaskIds).NotEmpty()
-                .WithErrorCode(WorkOrderErrors.RepairTasksRequired.Code)
-                .WithMessage(WorkOrderErrors.RepairTasksRequired.Description);
+                .WithErrorCode(RepairTaskErrors.AtLeastOneRepairTaskIsRequired.Code)
+                .WithMessage(RepairTaskErrors.AtLeastOneRepairTaskIsRequired.Description);
         }
     }
 }

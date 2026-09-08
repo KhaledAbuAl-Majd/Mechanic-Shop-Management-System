@@ -15,8 +15,8 @@ namespace MechanicShop.Application.Features.Billing.Mappers
             {
                 InvoiceId = entity.Id,
                 WorkOrderId = entity.WorkOrderId,
-                Customer = entity.WorkOrder!.Vehicle!.Customer!.ToDto(),
-                Vehicle = entity.WorkOrder!.Vehicle!.ToDto(),
+                Customer = entity.WorkOrder?.Vehicle?.Customer?.ToDto(),
+                Vehicle = entity.WorkOrder?.Vehicle?.ToDto(),
                 IssuedAtUtc = entity.IssuedAtUtc,
                 Subtotal = entity.SubTotal,
                 TaxAmount = entity.TaxAmount,
@@ -27,8 +27,11 @@ namespace MechanicShop.Application.Features.Billing.Mappers
             };
         }
 
-        public static List<InvoiceDto> ToDtos(this IEnumerable<Invoice> entities) =>
-             [.. entities.Select(ToDto)];
+        public static List<InvoiceDto> ToDtos(this IEnumerable<Invoice> entities)
+        {
+            ArgumentNullException.ThrowIfNull(entities);
+            return [.. entities.Select(ToDto)];
+        }
 
         public static InvoiceLineItemDto ToDto(this InvoiceLineItem entity)
         {
@@ -45,7 +48,10 @@ namespace MechanicShop.Application.Features.Billing.Mappers
             };
         }
 
-        public static List<InvoiceLineItemDto> ToDtos(this IEnumerable<InvoiceLineItem> entities) =>
-            [.. entities.Select(ToDto)];
+        public static List<InvoiceLineItemDto> ToDtos(this IEnumerable<InvoiceLineItem> entities)
+        {
+            ArgumentNullException.ThrowIfNull(entities);
+            return [.. entities.Select(ToDto)];
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using MechanicShop.Application.Common.Interfaces;
+﻿using MechanicShop.Application.Common.Errors;
+using MechanicShop.Application.Common.Interfaces;
 using MechanicShop.Application.Features.Billing.Dtos;
 using MechanicShop.Application.Features.Billing.Interfaces;
 using MechanicShop.Domain.Common.Results;
@@ -28,7 +29,7 @@ namespace MechanicShop.Application.Features.Billing.Queries.GetInvoicePdf
             if (invoice is null)
             {
                 _logger.LogWarning("Invoice not found. InvoiceId: {InvoiceId}", query.InvoiceId);
-                return Error.NotFound("Invoice not found.");
+                return ApplicationErrors.InvoiceNotFound;
             }
 
             try

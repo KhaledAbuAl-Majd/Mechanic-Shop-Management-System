@@ -25,7 +25,6 @@ namespace MechanicShop.Infrastructure.Data.Migrations
             modelBuilder.Entity("MechanicShop.Domain.Customers.Customer", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("CreatedAtUtc")
@@ -58,13 +57,16 @@ namespace MechanicShop.Infrastructure.Data.Migrations
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("Id"), false);
 
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
+
                     b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("MechanicShop.Domain.Customers.Vehicles.Vehicle", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("CreatedAtUtc")
@@ -115,7 +117,6 @@ namespace MechanicShop.Infrastructure.Data.Migrations
             modelBuilder.Entity("MechanicShop.Domain.Employees.Employee", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("CreatedAtUtc")
@@ -159,7 +160,6 @@ namespace MechanicShop.Infrastructure.Data.Migrations
             modelBuilder.Entity("MechanicShop.Domain.Identity.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("CreatedAtUtc")
@@ -208,7 +208,6 @@ namespace MechanicShop.Infrastructure.Data.Migrations
             modelBuilder.Entity("MechanicShop.Domain.RepairTasks.Parts.Part", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Cost")
@@ -250,7 +249,6 @@ namespace MechanicShop.Infrastructure.Data.Migrations
             modelBuilder.Entity("MechanicShop.Domain.RepairTasks.RepairTask", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("CreatedAtUtc")
@@ -287,7 +285,6 @@ namespace MechanicShop.Infrastructure.Data.Migrations
             modelBuilder.Entity("MechanicShop.Domain.WorkOrders.Billing.Invoice", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("CreatedAtUtc")
@@ -343,7 +340,6 @@ namespace MechanicShop.Infrastructure.Data.Migrations
             modelBuilder.Entity("MechanicShop.Domain.WorkOrders.WorkOrder", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("CreatedAtUtc")
