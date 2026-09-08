@@ -105,7 +105,7 @@ namespace MechanicShop.Api.Controllers.V1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         [EndpointSummary("Updates an existing customer.")]
         [EndpointDescription("Updates a customer and its associated vehicle.")]
-        [EndpointName("UpdateCustomer")]
+        [EndpointName("")]
         public async Task<IActionResult> Update([FromBody] UpdateCustomerRequest request, Guid id, CancellationToken ct)
         {
             var command = new UpdateCustomerCommand(
