@@ -1,5 +1,7 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using MechanicShop.Api.IntegrationTests.Common.EndpointsPath;
 using MechanicShop.Api.Requests.V1.Identity;
 using MechanicShop.Application.Features.Identity.Dtos;
@@ -78,9 +80,26 @@ public class AppHttpClient : IDisposable
         return await _httpClient.SendAsync(request, ct);
     }
 
-    public async Task<HttpResponseMessage> PostAsJsonAsync<T>(string requestUri, T value, CancellationToken ct = default)
+    public async Task<HttpResponseMessage> PostAsJsonAsync<T>(
+        string requestUri,
+        T value,
+        string? idempotenceValue = null,
+        bool attachIdempotencyKey = true,
+        CancellationToken ct = default)
     {
-        return await _httpClient.PostAsJsonAsync<T>(requestUri, value, ct);
+        var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
+        {
+            Content = JsonContent.Create(value)
+        };
+
+        if (attachIdempotencyKey)
+        {
+            var keyValue = string.IsNullOrWhiteSpace(idempotenceValue) ? Guid.NewGuid().ToString() : idempotenceValue;
+
+            request.Headers.Add("X-Idempotency-Key", keyValue);
+        }
+
+        return await _httpClient.SendAsync(request, ct);
     }
 
     public async Task<HttpResponseMessage> PutAsJsonAsync<T>(string requestUri, T value, CancellationToken ct = default)
@@ -91,6 +110,16 @@ public class AppHttpClient : IDisposable
     public async Task<HttpResponseMessage> DeleteAsync(string requestUri, CancellationToken ct = default)
     {
         return await _httpClient.DeleteAsync(requestUri, ct);
+    }
+
+    public static JsonSerializerOptions JsonSerializerOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web)
+    {
+        Converters = { new JsonStringEnumConverter() }
+    };
+
+    public async Task<T?> ReadFromJsonAsync<T>(HttpResponseMessage response, CancellationToken ct = default)
+    {
+        return await response.Content.ReadFromJsonAsync<T>(JsonSerializerOptions, ct);
     }
 
     public void Dispose()

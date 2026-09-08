@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -30,6 +29,14 @@ public class WebAppFactory : WebApplicationFactory<IAssemblyMarker>, IAsyncLifet
     private DbConnection _dbConnection = default!;
 
     public FakeTimeProvider FakeTimeProvider = new(DateTimeOffset.UtcNow);
+
+    public WebAppFactory()
+    {
+        Environment.SetEnvironmentVariable("ConnectionStrings__Redis", null);
+        Environment.SetEnvironmentVariable("RateLimiterSettings__Global__PermitLimit", "10000");
+        Environment.SetEnvironmentVariable("RateLimiterSettings__Auth__PermitLimit", "10000");
+        Environment.SetEnvironmentVariable("RateLimiterSettings__HeavyExport__PermitLimit", "100");
+    }
 
     public AppHttpClient CreateAppHttpClient()
     {
@@ -103,7 +110,8 @@ public class WebAppFactory : WebApplicationFactory<IAssemblyMarker>, IAsyncLifet
                 "AspNetUserClaims",
                 "AspNetUserLogins",
                 "AspNetUserRoles",
-                "AspNetUserTokens"]
+                "AspNetUserTokens",
+                "Employees"]
         });
 
     }
@@ -123,14 +131,7 @@ public class WebAppFactory : WebApplicationFactory<IAssemblyMarker>, IAsyncLifet
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureAppConfiguration((context, config) =>
-        {
-            config.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["ConnectionStrings:Redis"] = null
-            });
-        });
-
+        
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<IHostedService>();
