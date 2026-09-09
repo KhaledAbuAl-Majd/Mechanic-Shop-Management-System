@@ -21,7 +21,7 @@ namespace MechanicShop.Infrastructure.BackgroundJobs
         protected override async Task ExecuteAsync(CancellationToken ct)
         {
             //IDisposable
-            using var timer = new PeriodicTimer(TimeSpan.FromMinutes(_appSettings.OverdueBookingCleanupFrequencyMinutes));
+            using var timer = new PeriodicTimer(TimeSpan.FromMinutes(_appSettings.OverdueBookingCleanupFrequencyMinutes), _datetime);
 
             int failedCount = 0;
 
@@ -77,7 +77,7 @@ namespace MechanicShop.Infrastructure.BackgroundJobs
 
                     failedCount = 0;
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!ct.IsCancellationRequested)
                 {
                     failedCount++;
                     _logger.LogError(ex, "Error cleaning up overdue work orders.");
