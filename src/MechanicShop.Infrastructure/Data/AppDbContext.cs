@@ -9,6 +9,7 @@ using MechanicShop.Domain.RepairTasks.Parts;
 using MechanicShop.Domain.WorkOrders;
 using MechanicShop.Domain.WorkOrders.Billing;
 using MechanicShop.Infrastructure.Identity;
+using MechanicShop.Infrastructure.Outbox;
 using MediatR;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -33,10 +34,10 @@ namespace MechanicShop.Infrastructure.Data
 
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
+        public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            await DispatchDomainEventsAsync(cancellationToken);
-
             return await base.SaveChangesAsync(cancellationToken);
         }
 
@@ -45,28 +46,6 @@ namespace MechanicShop.Infrastructure.Data
             base.OnModelCreating(builder);
 
             builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
-        }
-
-        private async Task DispatchDomainEventsAsync(CancellationToken ct)
-        {
-            var entites = ChangeTracker.Entries()
-                .Where(e => e.Entity is Entity baseEntity && baseEntity.DomainEvents.Count != 0)
-                .Select(e => (Entity)e.Entity)
-                .ToList();
-
-            var domainEvents = entites
-                .SelectMany(e => e.DomainEvents)
-                .ToList();
-
-            foreach (var entity in entites)
-            {
-                entity.ClearDomainEvents();
-            }
-
-            foreach (var domainEvent in domainEvents)
-            {
-                await mediator.Publish(domainEvent, ct);
-            }
         }
     }
 }

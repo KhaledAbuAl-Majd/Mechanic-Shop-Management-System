@@ -56,6 +56,7 @@ public static class DependencyInjection
     private static IServiceCollection AddData(this IServiceCollection services, string connectionString)
     {
         services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
+        services.AddScoped<ISaveChangesInterceptor, OutboxMessageInterceptor>();
 
         services.AddDbContext<AppDbContext>((sp, options) =>
         {
@@ -86,6 +87,7 @@ public static class DependencyInjection
     private static IServiceCollection AddBackgroundServices(this IServiceCollection services)
     {
         services.AddHostedService<OverdueBookingCleanupService>();
+        services.AddHostedService<OutboxProcessorBackgroundService>();
 
         return services;
     }
