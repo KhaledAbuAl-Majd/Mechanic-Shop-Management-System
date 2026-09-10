@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/MechanicShop.Api/MechanicShop.Api.csproj" Id="e2466b72-f49a-457b-92f8-34b76fdb542e" />
     <Project Path="src/MechanicShop.Application/MechanicShop.Application.csproj" Id="9df41dd5-cabb-4cba-b433-6fe5812d500d" />
