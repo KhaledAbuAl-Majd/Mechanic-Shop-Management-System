@@ -423,7 +423,7 @@ namespace MechanicShop.Infrastructure.Data
 
     public static class InitialiserExtensions
     {
-        public static async Task InitialiseDatabaseAsync(this WebApplication app)
+        public static async Task InitialiseDatabaseAsync(this WebApplication app, bool shouldSeed = true)
         {
             using var scope = app.Services.CreateScope();
 
@@ -431,7 +431,10 @@ namespace MechanicShop.Infrastructure.Data
 
             await initializer.InitialiseAsync();
 
-            await initializer.SeedAsync();
+            if (shouldSeed)
+            {
+                await initializer.SeedAsync();
+            }
         }
     }
 }
