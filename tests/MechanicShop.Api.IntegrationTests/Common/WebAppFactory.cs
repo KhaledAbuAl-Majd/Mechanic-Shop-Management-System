@@ -32,7 +32,6 @@ public class WebAppFactory : WebApplicationFactory<IAssemblyMarker>, IAsyncLifet
 
     public WebAppFactory()
     {
-        Environment.SetEnvironmentVariable("ConnectionStrings__Redis", null);
         Environment.SetEnvironmentVariable("RateLimiterSettings__Global__PermitLimit", "10000");
         Environment.SetEnvironmentVariable("RateLimiterSettings__Auth__PermitLimit", "10000");
         Environment.SetEnvironmentVariable("RateLimiterSettings__HeavyExport__PermitLimit", "100");
@@ -131,7 +130,8 @@ public class WebAppFactory : WebApplicationFactory<IAssemblyMarker>, IAsyncLifet
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        
+        builder.UseSetting("ConnectionStrings:Redis", null);
+
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<IHostedService>();
