@@ -3,5 +3,5 @@
 [CollectionDefinition(CollectionName)]
 public class WebAppFactoryCollection : ICollectionFixture<WebAppFactory>
 {
-    public const string CollectionName = "WebAppFactoryCollection";
+    public const string CollectionName = "WebAppFactoryCollection-Api";
 }

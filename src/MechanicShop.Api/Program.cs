@@ -15,7 +15,11 @@ builder.Host.UseSerilog((context, loggerConfig) =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+var isDevelopment = app.Environment.IsDevelopment();
+var enableDocs = isDevelopment || app.Configuration.GetValue<bool>("EnableApiDocs");
+var enableDataSeeding = isDevelopment || app.Configuration.GetValue<bool>("EnableDataSeeding");
+
+if (enableDocs)
 {
     app.MapOpenApi();
 
@@ -30,7 +34,13 @@ if (app.Environment.IsDevelopment())
 
     app.MapScalarApiReference();
 
-   await app.InitialiseDatabaseAsync();
+}
+
+await app.InitialiseDatabaseAsync(shouldSeed: enableDataSeeding);
+
+if (!isDevelopment)
+{
+    app.UseHsts();
 }
 
 app.UseCoreMiddlewares(builder.Configuration);
