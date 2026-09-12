@@ -131,6 +131,7 @@ public class WebAppFactory : WebApplicationFactory<IAssemblyMarker>, IAsyncLifet
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseSetting("ConnectionStrings:Redis", null);
+        builder.UseSetting("JwtSettings:Secret", "YourSuperSecretKeyThatIsVeryLongAndSecure123456!");
 
         builder.ConfigureTestServices(services =>
         {
